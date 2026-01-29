@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.3] - 2025-01-30
+
+### Fixed
+- Fixed `brylix dev` command to use `--invoke-port` instead of `--invoke-address` for cargo-lambda watch
+
 ## [0.1.2] - 2025-01-30
 
 ### Fixed
@@ -51,7 +56,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - GraphQL Playground via `playground` feature flag
 - Multi-tenant mode via `multi-tenant` feature flag
 
-[Unreleased]: https://github.com/brylix/framework/compare/v0.1.2...HEAD
+[Unreleased]: https://github.com/brylix/framework/compare/v0.1.3...HEAD
+[0.1.3]: https://github.com/brylix/framework/compare/v0.1.2...v0.1.3
 [0.1.2]: https://github.com/brylix/framework/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/brylix/framework/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/brylix/framework/releases/tag/v0.1.0

@@ -34,8 +34,8 @@ pub fn run(port: u16) {
             "watch",
             "--env-file",
             ".env",
-            "--invoke-address",
-            &format!("127.0.0.1:{}", port),
+            "--invoke-port",
+            &port.to_string(),
         ])
         .status()
         .expect("Failed to execute cargo lambda watch");
