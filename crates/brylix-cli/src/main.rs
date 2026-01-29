@@ -8,6 +8,7 @@
 //! - `brylix build` - Build for Lambda
 //! - `brylix deploy` - Deploy to AWS Lambda
 //! - `brylix migrate` - Run database migrations
+//! - `brylix test` - Run tests
 
 mod commands;
 
@@ -83,6 +84,32 @@ enum Commands {
         #[arg(long)]
         down: bool,
     },
+
+    /// Run tests
+    Test {
+        /// Run only unit tests (--lib)
+        #[arg(long)]
+        unit: bool,
+
+        /// Run only integration tests (--test)
+        #[arg(long)]
+        integration: bool,
+
+        /// Watch mode - re-run tests on file changes (requires cargo-watch)
+        #[arg(long, short)]
+        watch: bool,
+
+        /// Run tests in release mode
+        #[arg(long)]
+        release: bool,
+
+        /// Show output from passing tests (--nocapture)
+        #[arg(long, short)]
+        verbose: bool,
+
+        /// Filter to run specific tests matching this string
+        filter: Option<String>,
+    },
 }
 
 #[derive(Subcommand)]
@@ -143,6 +170,16 @@ fn main() {
         }
         Commands::Migrate { generate, down } => {
             commands::migrate::run(generate.as_deref(), *down);
+        }
+        Commands::Test {
+            unit,
+            integration,
+            watch,
+            release,
+            verbose,
+            filter,
+        } => {
+            commands::test::run(*unit, *integration, *watch, *release, *verbose, filter.as_deref());
         }
     }
 }
