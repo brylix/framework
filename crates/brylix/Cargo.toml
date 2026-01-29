@@ -1,0 +1,64 @@
+[package]
+name = "brylix"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+description = "GraphQL framework for AWS Lambda with SeaORM and multi-tenant support"
+readme = "README.md"
+keywords = ["graphql", "lambda", "seaorm", "rust", "serverless"]
+categories = ["web-programming", "database"]
+
+[features]
+default = ["mysql", "playground"]
+mysql = ["sea-orm/sqlx-mysql", "sea-orm-migration/sqlx-mysql"]
+postgres = ["sea-orm/sqlx-postgres", "sea-orm-migration/sqlx-postgres"]
+playground = ["async-graphql/playground"]
+multi-tenant = []
+full = ["mysql", "postgres", "playground", "multi-tenant"]
+
+[dependencies]
+# Async runtime
+tokio = { workspace = true }
+async-trait = { workspace = true }
+futures = { workspace = true }
+
+# GraphQL
+async-graphql = { workspace = true }
+
+# Database
+sea-orm = { workspace = true }
+sea-orm-migration = { workspace = true }
+
+# Lambda
+lambda_http = { workspace = true }
+lambda_runtime = { workspace = true }
+
+# Auth
+jsonwebtoken = { workspace = true }
+argon2 = { workspace = true }
+
+# Serialization
+serde = { workspace = true }
+serde_json = { workspace = true }
+
+# Error handling
+thiserror = { workspace = true }
+anyhow = { workspace = true }
+
+# Logging
+tracing = { workspace = true }
+
+# Utils
+chrono = { workspace = true }
+regex = { workspace = true }
+lazy_static = { workspace = true }
+dotenvy = { workspace = true }
+http = { workspace = true }
+multer = { workspace = true }
+tokio-util = { workspace = true }
+rand = { workspace = true }
+
+[dev-dependencies]
+tokio-test = "0.4"

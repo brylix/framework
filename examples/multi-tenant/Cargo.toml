@@ -1,0 +1,24 @@
+[package]
+name = "brylix-example-multi-tenant"
+version = "0.1.0"
+edition = "2021"
+description = "Multi-tenant Task SaaS example using Brylix framework"
+publish = false
+
+[dependencies]
+brylix = { path = "../../crates/brylix", features = ["mysql", "playground", "multi-tenant"] }
+async-graphql = "7"
+sea-orm = { version = "1.1", features = ["sqlx-mysql", "runtime-tokio-rustls", "macros"] }
+tokio = { version = "1", features = ["macros"] }
+lambda_http = "0.17"
+chrono = { version = "0.4", features = ["serde"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+[dependencies.sea-orm-migration]
+version = "1.1"
+features = ["sqlx-mysql", "runtime-tokio-rustls"]
+
+[[bin]]
+name = "bootstrap"
+path = "src/main.rs"

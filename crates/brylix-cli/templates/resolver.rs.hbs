@@ -1,0 +1,120 @@
+//! {{entity_name}} GraphQL resolver.
+
+use async_graphql::{Context, Object, Result, SimpleObject};
+use brylix::prelude::*;
+use chrono::NaiveDateTime;
+use crate::model::{{entity_name_snake}};
+use crate::service::{{entity_name}}Service;
+
+// ============================================================================
+// DTO (Data Transfer Object)
+// ============================================================================
+
+#[derive(Debug, Clone, SimpleObject)]
+#[graphql(name = "{{entity_name}}")]
+pub struct {{entity_name}}Dto {
+    pub id: i64,
+    // Add your fields here
+    #[graphql(name = "createdAt")]
+    pub created_at: NaiveDateTime,
+    #[graphql(name = "updatedAt")]
+    pub updated_at: Option<NaiveDateTime>,
+}
+
+impl From<{{entity_name_snake}}::Model> for {{entity_name}}Dto {
+    fn from(m: {{entity_name_snake}}::Model) -> Self {
+        Self {
+            id: m.id,
+            // Map your fields here
+            created_at: m.created_at,
+            updated_at: m.updated_at,
+        }
+    }
+}
+
+// ============================================================================
+// Query Resolvers
+// ============================================================================
+
+/// {{entity_name}} query resolvers
+pub struct {{entity_name}}Query;
+
+#[Object]
+impl {{entity_name}}Query {
+    /// Get {{entity_name_snake}} by ID
+    async fn {{entity_name_snake}}(&self, ctx: &Context<'_>, id: i64) -> Result<{{entity_name}}Dto> {
+        let data = ctx.data_unchecked::<ContextData>();
+
+        let item = {{entity_name}}Service::get_by_id(&data.db, id)
+            .await
+            .map_err(gql_from_domain)?;
+
+        Ok({{entity_name}}Dto::from(item))
+    }
+
+    /// List all {{entity_name_plural}}
+    async fn {{entity_name_plural}}(&self, ctx: &Context<'_>) -> Result<Vec<{{entity_name}}Dto>> {
+        let data = ctx.data_unchecked::<ContextData>();
+
+        let items = {{entity_name}}Service::list(&data.db)
+            .await
+            .map_err(gql_from_domain)?;
+
+        Ok(items.into_iter().map({{entity_name}}Dto::from).collect())
+    }
+}
+
+// ============================================================================
+// Mutation Resolvers
+// ============================================================================
+
+/// {{entity_name}} mutation resolvers
+pub struct {{entity_name}}Mutation;
+
+#[Object]
+impl {{entity_name}}Mutation {
+    /// Create a new {{entity_name_snake}}
+    async fn create_{{entity_name_snake}}(
+        &self,
+        ctx: &Context<'_>,
+        // Add your input fields here
+    ) -> Result<{{entity_name}}Dto> {
+        let _ = require_auth(ctx)?;
+        let data = ctx.data_unchecked::<ContextData>();
+
+        let item = {{entity_name}}Service::create(&data.db /* , fields */)
+            .await
+            .map_err(gql_from_domain)?;
+
+        Ok({{entity_name}}Dto::from(item))
+    }
+
+    /// Update {{entity_name_snake}}
+    async fn update_{{entity_name_snake}}(
+        &self,
+        ctx: &Context<'_>,
+        id: i64,
+        // Add your input fields here
+    ) -> Result<{{entity_name}}Dto> {
+        let _ = require_auth(ctx)?;
+        let data = ctx.data_unchecked::<ContextData>();
+
+        let item = {{entity_name}}Service::update(&data.db, id /* , fields */)
+            .await
+            .map_err(gql_from_domain)?;
+
+        Ok({{entity_name}}Dto::from(item))
+    }
+
+    /// Delete {{entity_name_snake}}
+    async fn delete_{{entity_name_snake}}(&self, ctx: &Context<'_>, id: i64) -> Result<bool> {
+        let _ = require_auth(ctx)?;
+        let data = ctx.data_unchecked::<ContextData>();
+
+        {{entity_name}}Service::delete(&data.db, id)
+            .await
+            .map_err(gql_from_domain)?;
+
+        Ok(true)
+    }
+}

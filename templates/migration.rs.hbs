@@ -1,0 +1,54 @@
+//! Migration: Create {{table_name}} table
+
+use sea_orm_migration::prelude::*;
+
+#[derive(DeriveMigrationName)]
+pub struct Migration;
+
+#[async_trait::async_trait]
+impl MigrationTrait for Migration {
+    async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
+        manager
+            .create_table(
+                Table::create()
+                    .table({{entity_name}}::Table)
+                    .if_not_exists()
+                    .col(
+                        ColumnDef::new({{entity_name}}::Id)
+                            .big_integer()
+                            .not_null()
+                            .auto_increment()
+                            .primary_key(),
+                    )
+{{#each fields}}
+                    .col(ColumnDef::new({{../entity_name}}::{{pascal_name}}).{{column_type}}(){{#if not_null}}.not_null(){{/if}}{{#if unique}}.unique_key(){{/if}})
+{{/each}}
+                    .col(
+                        ColumnDef::new({{entity_name}}::CreatedAt)
+                            .timestamp()
+                            .not_null()
+                            .default(Expr::current_timestamp()),
+                    )
+                    .col(ColumnDef::new({{entity_name}}::UpdatedAt).timestamp().null())
+                    .to_owned(),
+            )
+            .await
+    }
+
+    async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
+        manager
+            .drop_table(Table::drop().table({{entity_name}}::Table).to_owned())
+            .await
+    }
+}
+
+#[derive(Iden)]
+enum {{entity_name}} {
+    Table,
+    Id,
+{{#each fields}}
+    {{pascal_name}},
+{{/each}}
+    CreatedAt,
+    UpdatedAt,
+}

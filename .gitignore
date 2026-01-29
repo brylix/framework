@@ -1,0 +1,15 @@
+# Rust build
+/target/
+
+# IDE
+.idea/
+.vscode/
+
+# OS
+.DS_Store
+
+# Env files
+.env
+
+# Claude
+CLAUDE.md

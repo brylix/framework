@@ -1,0 +1,23 @@
+[book]
+authors = ["Brylix Team"]
+language = "en"
+multilingual = false
+src = "src"
+title = "Brylix Framework Documentation"
+
+[output.html]
+default-theme = "rust"
+preferred-dark-theme = "coal"
+git-repository-url = "https://github.com/brylix/framework"
+edit-url-template = "https://github.com/brylix/framework/edit/main/docs/{path}"
+
+[output.html.fold]
+enable = true
+level = 1
+
+[output.html.search]
+enable = true
+limit-results = 30
+teaser-word-count = 30
+use-hierarchical-structure = true
+copy-js = true

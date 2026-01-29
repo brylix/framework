@@ -1,0 +1,56 @@
+//! {{entity_name}} service - business logic layer.
+
+use brylix::prelude::*;
+use sea_orm::DatabaseConnection;
+use crate::model::{{entity_name_snake}};
+use crate::repository::{{entity_name}}Repository;
+
+pub struct {{entity_name}}Service;
+
+impl {{entity_name}}Service {
+    /// Get {{entity_name_snake}} by ID
+    pub async fn get_by_id(
+        db: &DatabaseConnection,
+        id: i64,
+    ) -> DomainResult<{{entity_name_snake}}::Model> {
+        {{entity_name}}Repository::find_by_id(db, id)
+            .await?
+            .ok_or(DomainError::NotFound("{{entity_name}} not found".into()))
+    }
+
+    /// List all {{entity_name_plural}}
+    pub async fn list(db: &DatabaseConnection) -> DomainResult<Vec<{{entity_name_snake}}::Model>> {
+        {{entity_name}}Repository::find_all(db).await
+    }
+
+    /// Create a new {{entity_name_snake}}
+    pub async fn create(
+        db: &DatabaseConnection,
+        // Add your fields here
+    ) -> DomainResult<{{entity_name_snake}}::Model> {
+        // Validate input
+        // ...
+
+        {{entity_name}}Repository::create(db /* , fields */).await
+    }
+
+    /// Update {{entity_name_snake}}
+    pub async fn update(
+        db: &DatabaseConnection,
+        id: i64,
+        // Add your fields here
+    ) -> DomainResult<{{entity_name_snake}}::Model> {
+        // Verify exists
+        let _ = Self::get_by_id(db, id).await?;
+
+        {{entity_name}}Repository::update(db, id /* , fields */).await
+    }
+
+    /// Delete {{entity_name_snake}}
+    pub async fn delete(db: &DatabaseConnection, id: i64) -> DomainResult<()> {
+        // Verify exists
+        let _ = Self::get_by_id(db, id).await?;
+
+        {{entity_name}}Repository::delete(db, id).await
+    }
+}

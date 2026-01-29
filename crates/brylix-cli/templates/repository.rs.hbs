@@ -1,0 +1,78 @@
+//! {{entity_name}} repository - database access layer.
+
+use brylix::prelude::*;
+use sea_orm::{
+    ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter, Set,
+};
+use crate::model::{{entity_name_snake}}::{self, ActiveModel, Entity};
+use chrono::Utc;
+
+pub struct {{entity_name}}Repository;
+
+impl {{entity_name}}Repository {
+    /// Find {{entity_name_snake}} by ID
+    pub async fn find_by_id(
+        db: &DatabaseConnection,
+        id: i64,
+    ) -> DomainResult<Option<{{entity_name_snake}}::Model>> {
+        Entity::find_by_id(id)
+            .one(db)
+            .await
+            .map_err(|e| DomainError::DatabaseError(e.to_string()))
+    }
+
+    /// Find all {{entity_name_plural}}
+    pub async fn find_all(
+        db: &DatabaseConnection,
+    ) -> DomainResult<Vec<{{entity_name_snake}}::Model>> {
+        Entity::find()
+            .all(db)
+            .await
+            .map_err(|e| DomainError::DatabaseError(e.to_string()))
+    }
+
+    /// Create a new {{entity_name_snake}}
+    pub async fn create(
+        db: &DatabaseConnection,
+        // Add your fields here
+    ) -> DomainResult<{{entity_name_snake}}::Model> {
+        let model = ActiveModel {
+            // Set fields here
+            created_at: Set(Utc::now().naive_utc()),
+            ..Default::default()
+        };
+
+        model
+            .insert(db)
+            .await
+            .map_err(|e| DomainError::DatabaseError(e.to_string()))
+    }
+
+    /// Update {{entity_name_snake}}
+    pub async fn update(
+        db: &DatabaseConnection,
+        id: i64,
+        // Add your fields here
+    ) -> DomainResult<{{entity_name_snake}}::Model> {
+        let model = ActiveModel {
+            id: Set(id),
+            updated_at: Set(Some(Utc::now().naive_utc())),
+            // Set other fields here
+            ..Default::default()
+        };
+
+        model
+            .update(db)
+            .await
+            .map_err(|e| DomainError::DatabaseError(e.to_string()))
+    }
+
+    /// Delete {{entity_name_snake}}
+    pub async fn delete(db: &DatabaseConnection, id: i64) -> DomainResult<()> {
+        Entity::delete_by_id(id)
+            .exec(db)
+            .await
+            .map_err(|e| DomainError::DatabaseError(e.to_string()))?;
+        Ok(())
+    }
+}
