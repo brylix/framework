@@ -156,12 +156,23 @@ brylix = { version = "0.1", features = ["full"] }
 
 ## Documentation
 
-- [Getting Started](docs/getting-started.md)
-- [Configuration](docs/configuration.md)
-- [GraphQL Resolvers](docs/graphql-resolvers.md)
-- [Authentication](docs/authentication.md)
-- [Multi-Tenant](docs/multi-tenant.md)
-- [Deployment](docs/deployment.md)
+### Getting Started
+- [Installation](docs/src/getting-started/installation.md)
+- [Quick Start](docs/src/getting-started/quick-start.md)
+- [Project Structure](docs/src/getting-started/project-structure.md)
+
+### Guides
+- [Configuration](docs/src/guides/configuration.md)
+- [GraphQL](docs/src/guides/graphql.md)
+- [Authentication](docs/src/guides/authentication.md)
+- [Database](docs/src/guides/database.md)
+- [Multi-Tenancy](docs/src/guides/multi-tenancy.md)
+- [Error Handling](docs/src/guides/error-handling.md)
+- [Deployment](docs/src/guides/deployment.md)
+
+### API Reference
+- [Brylix Crate](docs/src/api/brylix.md)
+- [CLI Reference](docs/src/api/cli.md)
 
 ## License
 
