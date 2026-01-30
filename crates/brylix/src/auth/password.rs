@@ -59,11 +59,11 @@ pub fn verify_password(password: &str, hash: &str) -> Result<bool, String> {
 pub fn generate_temp_password() -> String {
     use rand::Rng;
     const CHARSET: &[u8] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%";
-    let mut rng = rand::thread_rng();
+    let mut rng = rand::rng();
 
     (0..16)
         .map(|_| {
-            let idx = rng.gen_range(0..CHARSET.len());
+            let idx = rng.random_range(0..CHARSET.len());
             CHARSET[idx] as char
         })
         .collect()

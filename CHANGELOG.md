@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] - 2025-01-31
+
+### Changed
+- **BREAKING**: Upgraded `lambda_http` from 0.17 to 1.0.2
+- **BREAKING**: Upgraded `lambda_runtime` from 0.14 to 1.0.2
+- Upgraded `rand` from 0.8 to 0.9 (updated internal API usage)
+- Upgraded `console` from 0.15 to 0.16
+- Upgraded `dialoguer` from 0.11 to 0.12
+- Upgraded `clap` from 4 to 4.5
+- Upgraded `handlebars` from 6 to 6.4
+
+### Fixed
+- Updated `rand` API usage: `thread_rng()` → `rng()`, `gen_range()` → `random_range()`
+- Fixed `brylix new` generated projects failing to build with `cargo lambda build --release --arm64` due to missing OpenSSL (now includes `openssl = { version = "0.10", features = ["vendored"] }`)
+- Fixed `brylix new` to use correct sqlx feature for PostgreSQL projects (`sqlx-postgres` instead of `sqlx-mysql`)
+
 ## [0.1.3] - 2025-01-30
 
 ### Fixed
@@ -56,7 +72,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - GraphQL Playground via `playground` feature flag
 - Multi-tenant mode via `multi-tenant` feature flag
 
-[Unreleased]: https://github.com/brylix/framework/compare/v0.1.3...HEAD
+[Unreleased]: https://github.com/brylix/framework/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/brylix/framework/compare/v0.1.3...v0.2.0
 [0.1.3]: https://github.com/brylix/framework/compare/v0.1.2...v0.1.3
 [0.1.2]: https://github.com/brylix/framework/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/brylix/framework/compare/v0.1.0...v0.1.1

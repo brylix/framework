@@ -81,16 +81,22 @@ fn create_project_structure(path: &Path, name: &str, multi_tenant: bool, databas
     create_graphql_modules(path);
 
     // Create migration
-    create_migration_files(path);
+    create_migration_files(path, database);
 }
 
 fn generate_cargo_toml(name: &str, multi_tenant: bool, database: &str) -> String {
-    let db_feature = if database == "postgres" {
-        r#"brylix = { version = "0.1", default-features = false, features = ["postgres", "playground"] }"#
+    let (db_feature, sqlx_feature) = if database == "postgres" {
+        (
+            r#"brylix = { version = "0.2", default-features = false, features = ["postgres", "playground"] }"#,
+            "sqlx-postgres"
+        )
     } else if multi_tenant {
-        r#"brylix = { version = "0.1", features = ["multi-tenant"] }"#
+        (
+            r#"brylix = { version = "0.2", features = ["multi-tenant"] }"#,
+            "sqlx-mysql"
+        )
     } else {
-        r#"brylix = "0.1""#
+        (r#"brylix = "0.2""#, "sqlx-mysql")
     };
 
     format!(
@@ -103,11 +109,15 @@ edition = "2021"
 {db_feature}
 tokio = {{ version = "1", features = ["rt-multi-thread", "macros"] }}
 async-graphql = {{ version = "7", features = ["chrono"] }}
-sea-orm = {{ version = "1.1", features = ["sqlx-mysql", "runtime-tokio-rustls", "macros"] }}
+sea-orm = {{ version = "1.1", features = ["{sqlx_feature}", "runtime-tokio-rustls", "macros"] }}
 serde = {{ version = "1", features = ["derive"] }}
 chrono = {{ version = "0.4", features = ["serde"] }}
 tracing = "0.1"
 tracing-subscriber = {{ version = "0.3", features = ["env-filter"] }}
+
+# Required for cross-compilation to AWS Lambda ARM64
+# This bundles OpenSSL and compiles it from source
+openssl = {{ version = "0.10", features = ["vendored"] }}
 
 [dependencies.migration]
 path = "./migration"
@@ -264,9 +274,16 @@ pub struct AuthPayload {
     println!("  {} Created GraphQL modules", CHECK);
 }
 
-fn create_migration_files(path: &Path) {
+fn create_migration_files(path: &Path, database: &str) {
     // migration/Cargo.toml
-    let migration_cargo = r#"[package]
+    let sqlx_feature = if database == "postgres" {
+        "sqlx-postgres"
+    } else {
+        "sqlx-mysql"
+    };
+
+    let migration_cargo = format!(
+        r#"[package]
 name = "migration"
 version = "0.1.0"
 edition = "2021"
@@ -276,9 +293,10 @@ name = "migration"
 path = "src/lib.rs"
 
 [dependencies]
-sea-orm-migration = { version = "1.1", features = ["runtime-tokio-rustls", "sqlx-mysql"] }
+sea-orm-migration = {{ version = "1.1", features = ["runtime-tokio-rustls", "{sqlx_feature}"] }}
 async-trait = "0.1"
-"#;
+"#
+    );
     fs::write(path.join("migration/Cargo.toml"), migration_cargo)
         .expect("Failed to write migration/Cargo.toml");
 
