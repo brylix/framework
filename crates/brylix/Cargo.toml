@@ -60,5 +60,8 @@ multer = { workspace = true }
 tokio-util = { workspace = true }
 rand = { workspace = true }
 
+# Cross-compilation support (vendored OpenSSL for Lambda ARM64 builds)
+openssl = { workspace = true }
+
 [dev-dependencies]
 tokio-test = "0.4"

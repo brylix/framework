@@ -115,10 +115,6 @@ chrono = {{ version = "0.4", features = ["serde"] }}
 tracing = "0.1"
 tracing-subscriber = {{ version = "0.3", features = ["env-filter"] }}
 
-# Required for cross-compilation to AWS Lambda ARM64
-# This bundles OpenSSL and compiles it from source
-openssl = {{ version = "0.10", features = ["vendored"] }}
-
 [dependencies.migration]
 path = "./migration"
 "#
