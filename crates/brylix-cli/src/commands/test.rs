@@ -51,18 +51,20 @@ fn run_tests(unit: bool, integration: bool, release: bool, verbose: bool, filter
         println!("  Running in release mode");
     }
 
+    // Always add separator for test runner args
+    args.push("--");
+
+    // Single-threaded to avoid DB migration conflicts in integration tests
+    args.push("--test-threads=1");
+
     // Verbose output
     if verbose {
-        args.push("--");
         args.push("--nocapture");
     }
 
     // Test filter
     let filter_with_separator: String;
     if let Some(f) = filter {
-        if !verbose {
-            args.push("--");
-        }
         filter_with_separator = f.to_string();
         args.push(&filter_with_separator);
         println!("  Filtering tests matching: {}", style(f).yellow());
@@ -128,10 +130,8 @@ fn run_watch(
         test_args.push_str(" --release");
     }
 
-    // Verbose and filter
-    if verbose || filter.is_some() {
-        test_args.push_str(" --");
-    }
+    // Always add separator and single-thread flag
+    test_args.push_str(" -- --test-threads=1");
 
     if verbose {
         test_args.push_str(" --nocapture");
