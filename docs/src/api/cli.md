@@ -8,6 +8,57 @@ Command-line tool for creating and managing Brylix projects.
 cargo install brylix-cli
 ```
 
+## Getting Help
+
+The CLI provides built-in help for all commands:
+
+```bash
+# Show all available commands and global options
+brylix --help
+brylix -h
+
+# Show version
+brylix --version
+brylix -V
+
+# Show help for a specific command
+brylix new --help
+brylix generate --help
+brylix dev --help
+brylix build --help
+brylix deploy --help
+brylix migrate --help
+brylix test --help
+
+# Show help for subcommands
+brylix generate entity --help
+brylix generate service --help
+brylix generate all --help
+```
+
+### Example Output
+
+```
+$ brylix --help
+CLI tool for the Brylix framework
+
+Usage: brylix <COMMAND>
+
+Commands:
+  new       Create a new Brylix project
+  generate  Generate code (entity, service, repository, resolver) [aliases: g]
+  dev       Run development server with hot reload
+  build     Build for AWS Lambda deployment
+  deploy    Deploy to AWS Lambda
+  migrate   Run database migrations
+  test      Run tests
+  help      Print this message or the help of the given subcommand(s)
+
+Options:
+  -h, --help     Print help
+  -V, --version  Print version
+```
+
 ## Commands
 
 ### `brylix new`
@@ -15,11 +66,15 @@ cargo install brylix-cli
 Create a new Brylix project.
 
 ```bash
-brylix new <project-name>
+brylix new <project-name> [OPTIONS]
 ```
 
 **Arguments:**
 - `<project-name>` - Name of the project directory
+
+**Options:**
+- `--multi-tenant` - Enable multi-tenant mode
+- `--database <TYPE>` - Database type: `mysql` (default) or `postgres`
 
 **Creates:**
 - Complete project structure
@@ -28,10 +83,20 @@ brylix new <project-name>
 - Environment example file
 - Git repository (optional)
 
-**Example:**
+**Examples:**
 ```bash
+# Basic project with MySQL
 brylix new my-api
 cd my-api
+
+# With multi-tenant support
+brylix new my-saas-api --multi-tenant
+
+# With PostgreSQL
+brylix new my-api --database postgres
+
+# Multi-tenant with PostgreSQL
+brylix new my-api --multi-tenant --database postgres
 ```
 
 ### `brylix generate`
@@ -155,6 +220,48 @@ brylix migrate up
 brylix migrate down
 brylix migrate status
 brylix migrate generate add_posts_table
+```
+
+### `brylix test`
+
+Run tests with various options.
+
+```bash
+brylix test [OPTIONS] [FILTER]
+```
+
+**Options:**
+- `--unit` - Run only unit tests (--lib)
+- `--integration` - Run only integration tests (--test)
+- `-w, --watch` - Watch mode - re-run tests on file changes (requires cargo-watch)
+- `--release` - Run tests in release mode
+- `-v, --verbose` - Show output from passing tests (--nocapture)
+
+**Arguments:**
+- `[FILTER]` - Optional filter to run specific tests matching this string
+
+**Examples:**
+```bash
+# Run all tests
+brylix test
+
+# Run only unit tests
+brylix test --unit
+
+# Run only integration tests
+brylix test --integration
+
+# Watch mode (re-runs on file changes)
+brylix test --watch
+
+# Run specific tests matching a pattern
+brylix test user
+
+# Verbose output
+brylix test --verbose
+
+# Combine options
+brylix test --unit --watch --verbose
 ```
 
 ## Global Options

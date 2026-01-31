@@ -109,6 +109,36 @@ SMTP_FROM_EMAIL=noreply@example.com
 
 ## CLI Commands
 
+### Getting Help
+
+```bash
+# Show all available commands
+brylix --help
+brylix -h
+
+# Show help for a specific command
+brylix new --help
+brylix generate --help
+brylix dev --help
+
+# Show help for subcommands
+brylix generate entity --help
+```
+
+### Available Commands
+
+| Command | Alias | Description |
+|---------|-------|-------------|
+| `new` | - | Create a new Brylix project |
+| `generate` | `g` | Generate code (entity, service, repository, resolver) |
+| `dev` | - | Run development server with hot reload |
+| `build` | - | Build for AWS Lambda deployment |
+| `deploy` | - | Deploy to AWS Lambda |
+| `migrate` | - | Run database migrations |
+| `test` | - | Run tests |
+
+### Examples
+
 ```bash
 # Create new project
 brylix new my-api
@@ -117,18 +147,30 @@ brylix new my-api --database postgres
 
 # Generate code
 brylix generate entity User
-brylix generate service User
+brylix g service User          # Using alias
 brylix generate repository User
 brylix generate resolver User
+brylix generate all User       # Generate all files for an entity
 
 # Development
-brylix dev                    # Run with cargo-lambda watch
-brylix migrate                # Run migrations
-brylix migrate:generate name  # Create new migration
+brylix dev                     # Run with cargo-lambda watch
+brylix dev --port 8080         # Custom port
+
+# Testing
+brylix test                    # Run all tests
+brylix test --watch            # Watch mode
+brylix test --unit             # Unit tests only
+
+# Migrations
+brylix migrate                 # Run migrations
+brylix migrate --generate name # Create new migration
+brylix migrate --down          # Rollback last migration
 
 # Deployment
-brylix build                  # Build for Lambda (ARM64)
-brylix deploy                 # Deploy to AWS Lambda
+brylix build                   # Build for Lambda (ARM64)
+brylix build --arm64           # Explicitly build for ARM64
+brylix deploy                  # Deploy to AWS Lambda
+brylix deploy --profile prod   # Deploy with specific AWS profile
 ```
 
 ## Project Structure
