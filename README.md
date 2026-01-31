@@ -10,6 +10,7 @@ A Rust framework for building GraphQL APIs on AWS Lambda with SeaORM and multi-t
 - **Multi-tenant** - Pool-per-droplet architecture for SaaS applications
 - **JWT Authentication** - Secure token-based authentication
 - **Validation** - Built-in input validation utilities
+- **Email Provider** - SMTP email support with attachments
 - **CLI Tool** - Project scaffolding and code generation
 
 ## Quick Start
@@ -95,6 +96,17 @@ REQUIRED_DB_VERSION=1
 TENANT_DB_PASSWORD=password-for-tenant-dbs
 ```
 
+### Email/SMTP (Optional)
+
+```env
+SMTP_HOST=smtp.example.com
+SMTP_PORT=465
+SMTP_USER=your-email@example.com
+SMTP_PASSWORD=your-password
+SMTP_FROM_NAME=Your App Name
+SMTP_FROM_EMAIL=noreply@example.com
+```
+
 ## CLI Commands
 
 ```bash
@@ -142,16 +154,19 @@ my-api/
 
 ```toml
 # MySQL (default)
-brylix = "0.1"
+brylix = "0.2"
 
 # PostgreSQL
-brylix = { version = "0.1", default-features = false, features = ["postgres", "playground"] }
+brylix = { version = "0.2", default-features = false, features = ["postgres", "playground"] }
 
 # Multi-tenant
-brylix = { version = "0.1", features = ["multi-tenant"] }
+brylix = { version = "0.2", features = ["multi-tenant"] }
 
-# Full features
-brylix = { version = "0.1", features = ["full"] }
+# Email support
+brylix = { version = "0.2", features = ["email"] }
+
+# Full features (includes all: mysql, postgres, playground, multi-tenant, email)
+brylix = { version = "0.2", features = ["full"] }
 ```
 
 ## Documentation

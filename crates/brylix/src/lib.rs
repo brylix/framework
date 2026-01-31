@@ -44,6 +44,7 @@
 //! - [`graphql`] - GraphQL context and guards
 //! - [`handler`] - Lambda HTTP handling
 //! - [`provider`] - External service integration
+//! - [`provider::email`] - Email provider (feature: `email`)
 //! - [`tenant`] - Multi-tenant connection management (feature: `multi-tenant`)
 
 #![warn(missing_docs)]

@@ -16,7 +16,8 @@ mysql = ["sea-orm/sqlx-mysql", "sea-orm-migration/sqlx-mysql"]
 postgres = ["sea-orm/sqlx-postgres", "sea-orm-migration/sqlx-postgres"]
 playground = ["async-graphql/playground"]
 multi-tenant = []
-full = ["mysql", "postgres", "playground", "multi-tenant"]
+email = ["lettre"]
+full = ["mysql", "postgres", "playground", "multi-tenant", "email"]
 
 [dependencies]
 # Async runtime
@@ -62,6 +63,9 @@ rand = { workspace = true }
 
 # Cross-compilation support (vendored OpenSSL for Lambda ARM64 builds)
 openssl = { workspace = true }
+
+# Email (optional)
+lettre = { workspace = true, optional = true }
 
 [dev-dependencies]
 tokio-test = "0.4"

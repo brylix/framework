@@ -10,6 +10,7 @@ A Rust framework for building GraphQL APIs on AWS Lambda with SeaORM and multi-t
 - **Multi-tenant** - Pool-per-droplet architecture for SaaS applications
 - **JWT Authentication** - Secure token-based authentication
 - **Validation** - Built-in input validation utilities
+- **Email Provider** - SMTP email support with attachments
 
 ## Installation
 
@@ -52,22 +53,35 @@ async fn main() -> Result<(), brylix::Error> {
 | `postgres` | PostgreSQL support via sqlx | No |
 | `playground` | GraphQL Playground IDE | Yes |
 | `multi-tenant` | Multi-tenant support | No |
+| `email` | SMTP email with attachments | No |
 | `full` | All features enabled | No |
 
 ```toml
 # PostgreSQL instead of MySQL
-brylix = { version = "0.1", default-features = false, features = ["postgres", "playground"] }
+brylix = { version = "0.2", default-features = false, features = ["postgres", "playground"] }
 
 # Multi-tenant support
-brylix = { version = "0.1", features = ["multi-tenant"] }
+brylix = { version = "0.2", features = ["multi-tenant"] }
+
+# Email support
+brylix = { version = "0.2", features = ["email"] }
 ```
 
 ## Environment Variables
 
 ```env
+# Required
 DATABASE_URL=mysql://user:password@host/database
 JWT_SECRET=your-secret-key
 JWT_EXP_DAYS=7
+
+# Email (optional, requires `email` feature)
+SMTP_HOST=smtp.example.com
+SMTP_PORT=465
+SMTP_USER=your-email@example.com
+SMTP_PASSWORD=your-password
+SMTP_FROM_NAME=Your App Name
+SMTP_FROM_EMAIL=noreply@example.com
 ```
 
 ## Documentation

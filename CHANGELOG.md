@@ -7,6 +7,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.3] - 2025-01-31
+
+### Added
+- New `email` feature for sending emails via SMTP
+- `EmailProvider` trait for custom email provider implementations
+- `SmtpProvider` - SMTP implementation with TLS support
+- `EmailMessage` - Builder for constructing email messages
+- `EmailAttachment` - Support for file attachments with convenience methods for common file types (PDF, CSV, Excel, JSON, images, ZIP)
+- `NoOpEmailProvider` - Testing/disabled email provider
+- New environment variables for SMTP configuration:
+  - `SMTP_HOST` - SMTP server hostname (required)
+  - `SMTP_PORT` - SMTP server port (default: 465)
+  - `SMTP_USER` - SMTP username (required)
+  - `SMTP_PASSWORD` - SMTP password (required)
+  - `SMTP_FROM_NAME` - Sender display name (default: "Brylix")
+  - `SMTP_FROM_EMAIL` - Sender email address (default: SMTP_USER)
+
+### Changed
+- Updated `full` feature to include `email`
+
+## [0.2.2] - 2025-01-31
+
+### Fixed
+- Run tests sequentially to avoid DB migration conflicts
+
 ## [0.2.1] - 2025-01-31
 
 ### Added
@@ -77,7 +102,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - GraphQL Playground via `playground` feature flag
 - Multi-tenant mode via `multi-tenant` feature flag
 
-[Unreleased]: https://github.com/brylix/framework/compare/v0.2.1...HEAD
+[Unreleased]: https://github.com/brylix/framework/compare/v0.2.3...HEAD
+[0.2.3]: https://github.com/brylix/framework/compare/v0.2.2...v0.2.3
+[0.2.2]: https://github.com/brylix/framework/compare/v0.2.1...v0.2.2
 [0.2.1]: https://github.com/brylix/framework/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/brylix/framework/compare/v0.1.3...v0.2.0
 [0.1.3]: https://github.com/brylix/framework/compare/v0.1.2...v0.1.3

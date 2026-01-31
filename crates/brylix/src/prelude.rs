@@ -39,6 +39,12 @@ pub use crate::handler::{
 // Provider
 pub use crate::provider::{HealthMetrics, Provider, ResourceInfo};
 
+// Email Provider (feature-gated)
+#[cfg(feature = "email")]
+pub use crate::provider::email::{
+    EmailAttachment, EmailMessage, EmailProvider, NoOpEmailProvider, SmtpProvider,
+};
+
 // Multi-tenant (feature-gated)
 #[cfg(feature = "multi-tenant")]
 pub use crate::tenant::{get_tenant_manager, TenantError, TenantInfo, TenantManager};

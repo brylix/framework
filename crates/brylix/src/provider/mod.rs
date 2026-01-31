@@ -1,9 +1,12 @@
-//! Provider trait for external service integrations.
+//! Provider traits for external service integrations.
 //!
-//! This module defines the `Provider` trait that applications can implement
-//! to integrate with external services like DigitalOcean, AWS, etc.
+//! This module provides traits and implementations for integrating with
+//! external services:
 //!
-//! # Usage
+//! - [`Provider`] - For cloud infrastructure providers (DigitalOcean, AWS, etc.)
+//! - [`email::EmailProvider`] - For email services (SMTP, SES, etc.) (feature: `email`)
+//!
+//! # Cloud Provider Usage
 //!
 //! ```rust
 //! use brylix::provider::Provider;
@@ -27,6 +30,21 @@
 //!     }
 //! }
 //! ```
+//!
+//! # Email Provider Usage
+//!
+//! Requires the `email` feature.
+//!
+//! ```rust,ignore
+//! use brylix::provider::email::{EmailMessage, EmailProvider, SmtpProvider};
+//!
+//! let provider = SmtpProvider::try_from_env();
+//! let message = EmailMessage::new("user@example.com", "Hello", "<p>World</p>");
+//! provider.send(message).await?;
+//! ```
+
+#[cfg(feature = "email")]
+pub mod email;
 
 use anyhow::Result;
 use sea_orm::DatabaseConnection;
