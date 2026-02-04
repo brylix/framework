@@ -16,6 +16,7 @@
 - [Error Handling](./guides/error-handling.md)
 - [Database & SeaORM](./guides/database.md)
 - [Multi-Tenancy](./guides/multi-tenancy.md)
+- [File Uploads (S3)](./guides/file-uploads.md)
 - [Deployment](./guides/deployment.md)
 
 # API Reference

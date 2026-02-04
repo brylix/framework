@@ -5,6 +5,7 @@
 //!
 //! - [`Provider`] - For cloud infrastructure providers (DigitalOcean, AWS, etc.)
 //! - [`email::EmailProvider`] - For email services (SMTP, SES, etc.) (feature: `email`)
+//! - [`s3::S3Provider`] - For S3 presigned URLs (uploads/downloads) (feature: `s3`)
 //!
 //! # Cloud Provider Usage
 //!
@@ -42,9 +43,25 @@
 //! let message = EmailMessage::new("user@example.com", "Hello", "<p>World</p>");
 //! provider.send(message).await?;
 //! ```
+//!
+//! # S3 Provider Usage
+//!
+//! Requires the `s3` feature.
+//!
+//! ```rust,ignore
+//! use brylix::provider::s3::{AwsS3Provider, PresignedUrlRequest, S3Provider};
+//!
+//! let provider = AwsS3Provider::try_from_env().await;
+//! let request = PresignedUrlRequest::upload("products", "image.jpg")
+//!     .with_content_type("image/jpeg");
+//! let response = provider.generate_upload_url(request, None).await?;
+//! ```
 
 #[cfg(feature = "email")]
 pub mod email;
+
+#[cfg(feature = "s3")]
+pub mod s3;
 
 use anyhow::Result;
 use sea_orm::DatabaseConnection;

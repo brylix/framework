@@ -6,17 +6,20 @@ Core framework library providing error handling, authentication, configuration, 
 
 ```toml
 [dependencies]
-brylix = { version = "0.1", features = ["mysql", "playground"] }
+brylix = { version = "0.2", features = ["mysql", "playground"] }
 ```
 
 ## Feature Flags
 
 | Feature | Description |
 |---------|-------------|
-| `mysql` | MySQL database support |
+| `mysql` | MySQL database support (default) |
 | `postgres` | PostgreSQL database support |
-| `playground` | GraphQL Playground UI |
+| `playground` | GraphQL Playground UI (default) |
 | `multi-tenant` | Multi-tenant mode |
+| `email` | SMTP email provider |
+| `s3` | S3 presigned URL provider |
+| `full` | All features enabled |
 
 ## Modules
 
@@ -32,6 +35,8 @@ use brylix::prelude::*;
 // - gql_from_domain, gql_error, gql_bad_request, gql_not_found, gql_unauthorized
 // - ContextData, require_auth
 // - BrylixConfig
+// - EmailMessage, EmailProvider, SmtpProvider (with email feature)
+// - AwsS3Provider, S3Provider, PresignedUrlRequest, PresignedUrlResponse (with s3 feature)
 ```
 
 ### `brylix::config`
@@ -165,6 +170,33 @@ let manager = TenantManager::new(config)?;
 let db = manager.get_connection("tenant_name").await?;
 ```
 
+### `brylix::provider::s3`
+
+S3 presigned URL provider (requires `s3` feature):
+
+```rust
+use brylix::prelude::*;
+
+// Create provider from environment
+let s3 = AwsS3Provider::try_from_env().await;
+
+// Generate upload URL
+let request = PresignedUrlRequest::upload("products", "image.jpg")
+    .with_content_type("image/jpeg")
+    .with_expires_in(3600);
+let response = s3.generate_upload_url(request, None).await?;
+
+// Generate download URL
+let response = s3.generate_download_url("products", "image.jpg", None, None).await?;
+
+// Delete object
+s3.delete_object("products", "image.jpg", None).await?;
+
+// Multi-tenant: pass tenant name as second argument
+let response = s3.generate_upload_url(request, Some("tenant1")).await?;
+// response.key = "tenant1/products/image.jpg"
+```
+
 ## Types
 
 ### BrylixConfig
@@ -198,5 +230,27 @@ pub struct Claims {
     pub tenant: Option<String>,
     pub exp: i64,           // Expiration
     pub iat: i64,           // Issued at
+}
+```
+
+### PresignedUrlRequest (s3 feature)
+
+```rust
+pub struct PresignedUrlRequest {
+    pub folder: String,
+    pub filename: String,
+    pub content_type: Option<String>,
+    pub expires_in_secs: Option<u64>,
+}
+```
+
+### PresignedUrlResponse (s3 feature)
+
+```rust
+pub struct PresignedUrlResponse {
+    pub url: String,        // Presigned URL
+    pub method: String,     // HTTP method (PUT/GET)
+    pub key: String,        // Full S3 key
+    pub expires_at: i64,    // Unix timestamp
 }
 ```

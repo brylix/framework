@@ -45,6 +45,12 @@ pub use crate::provider::email::{
     EmailAttachment, EmailMessage, EmailProvider, NoOpEmailProvider, SmtpProvider,
 };
 
+// S3 Provider (feature-gated)
+#[cfg(feature = "s3")]
+pub use crate::provider::s3::{
+    AwsS3Provider, NoOpS3Provider, PresignedUrlRequest, PresignedUrlResponse, S3Provider,
+};
+
 // Multi-tenant (feature-gated)
 #[cfg(feature = "multi-tenant")]
 pub use crate::tenant::{get_tenant_manager, TenantError, TenantInfo, TenantManager};

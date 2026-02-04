@@ -11,6 +11,7 @@ A Rust framework for building GraphQL APIs on AWS Lambda with SeaORM and multi-t
 - **JWT Authentication** - Secure token-based authentication
 - **Validation** - Built-in input validation utilities
 - **Email Provider** - SMTP email support with attachments
+- **S3 Provider** - Presigned URL generation for file uploads/downloads
 - **CLI Tool** - Project scaffolding and code generation
 
 ## Quick Start
@@ -78,6 +79,41 @@ async fn main() -> Result<(), brylix::Error> {
 }
 ```
 
+### S3 Presigned URLs
+
+Generate presigned URLs for file uploads and downloads. Supports multi-tenant file organization.
+
+```rust
+use brylix::prelude::*;
+
+// Create S3 provider from environment
+let s3 = AwsS3Provider::try_from_env().await;
+
+// Generate upload URL (single-tenant)
+let request = PresignedUrlRequest::upload("products", "image.jpg")
+    .with_content_type("image/jpeg")
+    .with_expires_in(3600);
+let response = s3.generate_upload_url(request, None).await?;
+// response.key = "products/image.jpg"
+
+// Generate upload URL (multi-tenant)
+let response = s3.generate_upload_url(request, Some("tenant1")).await?;
+// response.key = "tenant1/products/image.jpg"
+
+// Generate download URL
+let response = s3.generate_download_url("products", "image.jpg", None, None).await?;
+
+// Delete object
+s3.delete_object("products", "image.jpg", None).await?;
+```
+
+**Multi-Tenant File Organization:**
+
+| Mode | Path Structure | Example |
+|------|---------------|---------|
+| Single-tenant | `/{folder}/{filename}` | `/products/image.jpg` |
+| Multi-tenant | `/{tenant}/{folder}/{filename}` | `/tenant1/products/image.jpg` |
+
 ## Environment Variables
 
 ### Required
@@ -106,6 +142,17 @@ SMTP_PASSWORD=your-password
 SMTP_FROM_NAME=Your App Name
 SMTP_FROM_EMAIL=noreply@example.com
 ```
+
+### S3 Storage (Optional)
+
+```env
+S3_BUCKET=my-bucket-name
+S3_REGION=us-east-1
+S3_UPLOAD_EXPIRES_SECS=3600
+S3_DOWNLOAD_EXPIRES_SECS=3600
+```
+
+AWS credentials are loaded via the standard credential chain (environment variables, IAM role, or AWS profile).
 
 ## CLI Commands
 
@@ -207,7 +254,10 @@ brylix = { version = "0.2", features = ["multi-tenant"] }
 # Email support
 brylix = { version = "0.2", features = ["email"] }
 
-# Full features (includes all: mysql, postgres, playground, multi-tenant, email)
+# S3 presigned URLs
+brylix = { version = "0.2", features = ["s3"] }
+
+# Full features (includes all: mysql, postgres, playground, multi-tenant, email, s3)
 brylix = { version = "0.2", features = ["full"] }
 ```
 
@@ -224,6 +274,7 @@ brylix = { version = "0.2", features = ["full"] }
 - [Authentication](docs/src/guides/authentication.md)
 - [Database](docs/src/guides/database.md)
 - [Multi-Tenancy](docs/src/guides/multi-tenancy.md)
+- [File Uploads (S3)](docs/src/guides/file-uploads.md)
 - [Error Handling](docs/src/guides/error-handling.md)
 - [Deployment](docs/src/guides/deployment.md)
 

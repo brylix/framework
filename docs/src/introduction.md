@@ -9,6 +9,7 @@
 - **SeaORM** - Type-safe database operations with MySQL and PostgreSQL
 - **Multi-Tenant** - Pool-per-droplet architecture for efficient tenant isolation
 - **JWT Auth** - Secure authentication with tenant-aware tokens
+- **S3 Provider** - Presigned URLs for file uploads/downloads
 - **CLI Tool** - Code generation and project scaffolding
 
 ## Why Brylix?

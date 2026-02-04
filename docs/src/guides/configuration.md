@@ -118,6 +118,25 @@ BRYLIX_DB_PASSWORD=tenant-db-password
 REQUIRED_DB_VERSION=1
 ```
 
+## S3 Configuration
+
+For file uploads via presigned URLs (requires `s3` feature):
+
+```env
+# Required
+S3_BUCKET=my-app-uploads
+
+# Optional
+S3_REGION=us-east-1
+S3_UPLOAD_EXPIRES_SECS=3600
+S3_DOWNLOAD_EXPIRES_SECS=3600
+```
+
+AWS credentials are loaded via the standard credential chain:
+- Environment variables (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`)
+- IAM role (recommended for Lambda)
+- AWS profile
+
 ## Environment-Specific Config
 
 ### Development (.env)

@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.4] - 2025-02-04
+
+### Added
+- New `s3` feature for S3 presigned URL generation
+- `S3Provider` trait for custom S3 provider implementations
+- `AwsS3Provider` - AWS S3 implementation using aws-sdk-s3
+- `PresignedUrlRequest` - Builder for constructing upload requests with content type and expiration
+- `PresignedUrlResponse` - Response containing presigned URL, method, key, and expiration timestamp
+- `NoOpS3Provider` - Testing/mock S3 provider
+- Multi-tenant support with automatic tenant-prefixed paths (`/{tenant}/{folder}/{filename}`)
+- New environment variables for S3 configuration:
+  - `S3_BUCKET` - S3 bucket name (required)
+  - `S3_REGION` - AWS region (default: us-east-1)
+  - `S3_UPLOAD_EXPIRES_SECS` - Upload URL expiration in seconds (default: 3600)
+  - `S3_DOWNLOAD_EXPIRES_SECS` - Download URL expiration in seconds (default: 3600)
+- New workspace dependencies: `aws-config`, `aws-sdk-s3`
+- Documentation: File Uploads (S3) guide
+
+### Changed
+- Updated `full` feature to include `s3`
+
 ## [0.2.3] - 2025-01-31
 
 ### Added
@@ -102,7 +123,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - GraphQL Playground via `playground` feature flag
 - Multi-tenant mode via `multi-tenant` feature flag
 
-[Unreleased]: https://github.com/brylix/framework/compare/v0.2.3...HEAD
+[Unreleased]: https://github.com/brylix/framework/compare/v0.2.4...HEAD
+[0.2.4]: https://github.com/brylix/framework/compare/v0.2.3...v0.2.4
 [0.2.3]: https://github.com/brylix/framework/compare/v0.2.2...v0.2.3
 [0.2.2]: https://github.com/brylix/framework/compare/v0.2.1...v0.2.2
 [0.2.1]: https://github.com/brylix/framework/compare/v0.2.0...v0.2.1
