@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.6] - 2026-02-04
+
+### Added
+- Custom S3 credentials support for local development via `S3_ACCESS_KEY_ID` and `S3_SECRET_ACCESS_KEY` environment variables
+- Automatic fallback to default AWS credential chain (IAM role) when custom credentials are not set - ideal for Lambda deployments
+- New `with_max_size(bytes)` builder method on `PresignedUrlRequest` for specifying maximum allowed file size
+- New `max_size_bytes` field in `PresignedUrlResponse` for client-side validation
+- New dependency: `aws-credential-types` for custom credential provider support
+
+### Changed
+- `AwsS3Provider::new()` now checks for custom S3 credentials before falling back to default AWS credential chain
+
 ## [0.2.5] - 2026-02-04
 
 ### Fixed
@@ -128,7 +140,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - GraphQL Playground via `playground` feature flag
 - Multi-tenant mode via `multi-tenant` feature flag
 
-[Unreleased]: https://github.com/brylix/framework/compare/v0.2.5...HEAD
+[Unreleased]: https://github.com/brylix/framework/compare/v0.2.6...HEAD
+[0.2.6]: https://github.com/brylix/framework/compare/v0.2.5...v0.2.6
 [0.2.5]: https://github.com/brylix/framework/compare/v0.2.4...v0.2.5
 [0.2.4]: https://github.com/brylix/framework/compare/v0.2.3...v0.2.4
 [0.2.3]: https://github.com/brylix/framework/compare/v0.2.2...v0.2.3

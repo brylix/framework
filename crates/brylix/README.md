@@ -93,6 +93,10 @@ S3_BUCKET=my-bucket-name
 S3_REGION=us-east-1
 S3_UPLOAD_EXPIRES_SECS=3600
 S3_DOWNLOAD_EXPIRES_SECS=3600
+# Custom credentials for local development (optional)
+# If not set, falls back to default AWS credential chain (IAM role for Lambda)
+S3_ACCESS_KEY_ID=your-access-key
+S3_SECRET_ACCESS_KEY=your-secret-key
 ```
 
 ## Documentation

@@ -17,7 +17,7 @@ postgres = ["sea-orm/sqlx-postgres", "sea-orm-migration/sqlx-postgres"]
 playground = ["async-graphql/playground"]
 multi-tenant = []
 email = ["lettre"]
-s3 = ["aws-config", "aws-sdk-s3"]
+s3 = ["aws-config", "aws-sdk-s3", "aws-credential-types"]
 full = ["mysql", "postgres", "playground", "multi-tenant", "email", "s3"]
 
 [dependencies]
@@ -71,6 +71,7 @@ lettre = { workspace = true, optional = true }
 # AWS S3 (optional)
 aws-config = { workspace = true, optional = true }
 aws-sdk-s3 = { workspace = true, optional = true }
+aws-credential-types = { workspace = true, optional = true }
 
 [dev-dependencies]
 tokio-test = "0.4"

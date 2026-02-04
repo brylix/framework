@@ -8,7 +8,7 @@ members = [
 ]
 
 [workspace.package]
-version = "0.2.5"
+version = "0.2.6"
 edition = "2021"
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/brylix/framework"
@@ -69,6 +69,7 @@ lettre = { version = "0.11", default-features = false, features = ["tokio1-rustl
 # AWS S3
 aws-config = { version = "1.5", features = ["behavior-version-latest"] }
 aws-sdk-s3 = "1.65"
+aws-credential-types = "1.2"
 
 # Cross-compilation support
 openssl = { version = "0.10", features = ["vendored"] }

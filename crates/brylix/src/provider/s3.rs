@@ -69,6 +69,7 @@ const DEFAULT_DOWNLOAD_EXPIRES_SECS: u64 = 3600;
 ///
 /// let request = PresignedUrlRequest::upload("products", "image.jpg")
 ///     .with_content_type("image/jpeg")
+///     .with_max_size(5 * 1024 * 1024) // 5 MB
 ///     .with_expires_in(7200); // 2 hours
 /// ```
 #[derive(Debug, Clone)]
@@ -81,6 +82,8 @@ pub struct PresignedUrlRequest {
     pub content_type: Option<String>,
     /// URL expiration in seconds
     pub expires_in_secs: Option<u64>,
+    /// Maximum allowed file size in bytes (for client-side validation)
+    pub max_size_bytes: Option<u64>,
 }
 
 impl PresignedUrlRequest {
@@ -105,6 +108,7 @@ impl PresignedUrlRequest {
             filename: filename.into(),
             content_type: None,
             expires_in_secs: None,
+            max_size_bytes: None,
         }
     }
 
@@ -129,6 +133,29 @@ impl PresignedUrlRequest {
         self.expires_in_secs = Some(secs);
         self
     }
+
+    /// Set the maximum allowed file size in bytes.
+    ///
+    /// This value is returned in the response for client-side validation.
+    /// The server should also validate the file size after upload confirmation.
+    ///
+    /// # Arguments
+    ///
+    /// * `bytes` - Maximum file size in bytes
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// use brylix::provider::s3::PresignedUrlRequest;
+    ///
+    /// let request = PresignedUrlRequest::upload("avatars", "photo.jpg")
+    ///     .with_max_size(5 * 1024 * 1024); // 5 MB limit
+    /// ```
+    #[must_use]
+    pub fn with_max_size(mut self, bytes: u64) -> Self {
+        self.max_size_bytes = Some(bytes);
+        self
+    }
 }
 
 /// Response containing presigned URL details.
@@ -144,6 +171,8 @@ pub struct PresignedUrlResponse {
     pub key: String,
     /// URL expiration timestamp (Unix seconds)
     pub expires_at: i64,
+    /// Maximum allowed file size in bytes (for client-side validation)
+    pub max_size_bytes: Option<u64>,
 }
 
 /// Trait for S3 operations with presigned URLs.
@@ -297,11 +326,47 @@ pub struct AwsS3Provider {
 
 impl AwsS3Provider {
     /// Create a new AWS S3 provider with the given configuration.
+    ///
+    /// Supports two credential modes:
+    /// 1. **Custom credentials**: If `S3_ACCESS_KEY_ID` and `S3_SECRET_ACCESS_KEY` are set,
+    ///    uses those (useful for local development).
+    /// 2. **Default chain**: Falls back to standard AWS credential chain (IAM role, env vars, profile).
+    ///    This is the recommended approach for Lambda deployments.
     async fn new(config: S3Config) -> DomainResult<Self> {
-        let aws_config = aws_config::defaults(aws_config::BehaviorVersion::latest())
-            .region(aws_sdk_s3::config::Region::new(config.region.clone()))
-            .load()
-            .await;
+        use aws_credential_types::Credentials;
+        use aws_credential_types::provider::SharedCredentialsProvider;
+
+        let region = aws_sdk_s3::config::Region::new(config.region.clone());
+
+        // Check for custom S3 credentials (for local development)
+        let aws_config = match (
+            std::env::var("S3_ACCESS_KEY_ID"),
+            std::env::var("S3_SECRET_ACCESS_KEY"),
+        ) {
+            (Ok(access_key), Ok(secret_key)) => {
+                tracing::debug!("Using custom S3 credentials from S3_ACCESS_KEY_ID/S3_SECRET_ACCESS_KEY");
+                let credentials = Credentials::new(
+                    access_key,
+                    secret_key,
+                    None, // session token
+                    None, // expiry
+                    "s3_env_credentials",
+                );
+                aws_config::defaults(aws_config::BehaviorVersion::latest())
+                    .region(region)
+                    .credentials_provider(SharedCredentialsProvider::new(credentials))
+                    .load()
+                    .await
+            }
+            _ => {
+                // Fall back to default AWS credential chain (IAM role for Lambda)
+                tracing::debug!("Using default AWS credential chain");
+                aws_config::defaults(aws_config::BehaviorVersion::latest())
+                    .region(region)
+                    .load()
+                    .await
+            }
+        };
 
         let client = Client::new(&aws_config);
 
@@ -412,6 +477,7 @@ impl S3Provider for AwsS3Provider {
             method: "PUT".to_string(),
             key,
             expires_at: Self::expires_at(expires_in),
+            max_size_bytes: request.max_size_bytes,
         })
     }
 
@@ -446,6 +512,7 @@ impl S3Provider for AwsS3Provider {
             method: "GET".to_string(),
             key,
             expires_at: Self::expires_at(expires_in),
+            max_size_bytes: None,
         })
     }
 
@@ -536,6 +603,7 @@ impl S3Provider for NoOpS3Provider {
             method: "PUT".to_string(),
             key,
             expires_at: chrono::Utc::now().timestamp() + expires_in as i64,
+            max_size_bytes: request.max_size_bytes,
         })
     }
 
@@ -560,6 +628,7 @@ impl S3Provider for NoOpS3Provider {
             method: "GET".to_string(),
             key,
             expires_at: chrono::Utc::now().timestamp() + expires_in as i64,
+            max_size_bytes: None,
         })
     }
 

@@ -33,19 +33,34 @@ brylix = { version = "0.2", features = ["s3", "multi-tenant"] }
 | `S3_REGION` | No | `us-east-1` | AWS region |
 | `S3_UPLOAD_EXPIRES_SECS` | No | `3600` | Upload URL expiration (seconds) |
 | `S3_DOWNLOAD_EXPIRES_SECS` | No | `3600` | Download URL expiration (seconds) |
+| `S3_ACCESS_KEY_ID` | No | - | Custom AWS access key (for local development) |
+| `S3_SECRET_ACCESS_KEY` | No | - | Custom AWS secret key (for local development) |
 
-AWS credentials are loaded via the standard credential chain:
-1. Environment variables (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`)
-2. IAM role (recommended for Lambda)
-3. AWS profile (`~/.aws/credentials`)
+### Credential Resolution
+
+Brylix S3 provider supports two credential modes:
+
+1. **Custom credentials (local development)**: If `S3_ACCESS_KEY_ID` and `S3_SECRET_ACCESS_KEY` are set, these are used. This is useful for local development where you can't use the reserved `AWS_*` environment variables.
+
+2. **Default AWS credential chain (Lambda)**: If custom credentials are not set, falls back to:
+   - IAM role (recommended for Lambda)
+   - Standard `AWS_ACCESS_KEY_ID`/`AWS_SECRET_ACCESS_KEY` env vars
+   - AWS profile (`~/.aws/credentials`)
+
+> **Note**: In AWS Lambda, `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` are reserved and automatically set by the execution role. Use IAM roles for Lambda deployments and custom `S3_*` credentials only for local development.
 
 ### Example .env
 
 ```env
+# S3 Configuration
 S3_BUCKET=my-app-uploads
 S3_REGION=us-east-1
 S3_UPLOAD_EXPIRES_SECS=3600
 S3_DOWNLOAD_EXPIRES_SECS=7200
+
+# For local development only (not needed in Lambda - use IAM role)
+S3_ACCESS_KEY_ID=AKIAXXXXXXXXXXXXXXXX
+S3_SECRET_ACCESS_KEY=your-secret-key
 ```
 
 ## Basic Usage
