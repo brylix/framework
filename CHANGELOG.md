@@ -7,7 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.2.4] - 2025-02-04
+## [0.2.5] - 2026-02-04
+
+### Fixed
+- Updated crate README.md with S3 feature documentation
+
+## [0.2.4] - 2026-02-04
 
 ### Added
 - New `s3` feature for S3 presigned URL generation
@@ -123,7 +128,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - GraphQL Playground via `playground` feature flag
 - Multi-tenant mode via `multi-tenant` feature flag
 
-[Unreleased]: https://github.com/brylix/framework/compare/v0.2.4...HEAD
+[Unreleased]: https://github.com/brylix/framework/compare/v0.2.5...HEAD
+[0.2.5]: https://github.com/brylix/framework/compare/v0.2.4...v0.2.5
 [0.2.4]: https://github.com/brylix/framework/compare/v0.2.3...v0.2.4
 [0.2.3]: https://github.com/brylix/framework/compare/v0.2.2...v0.2.3
 [0.2.2]: https://github.com/brylix/framework/compare/v0.2.1...v0.2.2

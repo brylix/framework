@@ -11,12 +11,13 @@ A Rust framework for building GraphQL APIs on AWS Lambda with SeaORM and multi-t
 - **JWT Authentication** - Secure token-based authentication
 - **Validation** - Built-in input validation utilities
 - **Email Provider** - SMTP email support with attachments
+- **S3 Provider** - Presigned URL generation for file uploads/downloads
 
 ## Installation
 
 ```toml
 [dependencies]
-brylix = "0.1"
+brylix = "0.2"
 ```
 
 ## Quick Start
@@ -54,6 +55,7 @@ async fn main() -> Result<(), brylix::Error> {
 | `playground` | GraphQL Playground IDE | Yes |
 | `multi-tenant` | Multi-tenant support | No |
 | `email` | SMTP email with attachments | No |
+| `s3` | S3 presigned URLs for file uploads | No |
 | `full` | All features enabled | No |
 
 ```toml
@@ -65,6 +67,9 @@ brylix = { version = "0.2", features = ["multi-tenant"] }
 
 # Email support
 brylix = { version = "0.2", features = ["email"] }
+
+# S3 presigned URLs
+brylix = { version = "0.2", features = ["s3"] }
 ```
 
 ## Environment Variables
@@ -82,6 +87,12 @@ SMTP_USER=your-email@example.com
 SMTP_PASSWORD=your-password
 SMTP_FROM_NAME=Your App Name
 SMTP_FROM_EMAIL=noreply@example.com
+
+# S3 (optional, requires `s3` feature)
+S3_BUCKET=my-bucket-name
+S3_REGION=us-east-1
+S3_UPLOAD_EXPIRES_SECS=3600
+S3_DOWNLOAD_EXPIRES_SECS=3600
 ```
 
 ## Documentation
