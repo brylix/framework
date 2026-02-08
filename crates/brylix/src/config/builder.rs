@@ -2,6 +2,9 @@
 
 use super::{Config, DatabaseConfig, JwtConfig, MultiTenantConfig};
 
+#[cfg(feature = "admin-override")]
+use crate::auth::admin_override::AdminOverrideConfig;
+
 /// Builder for creating Config instances programmatically.
 ///
 /// # Example
@@ -26,6 +29,8 @@ pub struct ConfigBuilder {
     jwt: JwtConfig,
     multi_tenant: MultiTenantConfig,
     log_level: String,
+    #[cfg(feature = "admin-override")]
+    admin_override: Option<AdminOverrideConfig>,
 }
 
 impl ConfigBuilder {
@@ -36,6 +41,8 @@ impl ConfigBuilder {
             jwt: JwtConfig::default(),
             multi_tenant: MultiTenantConfig::default(),
             log_level: "info".to_string(),
+            #[cfg(feature = "admin-override")]
+            admin_override: None,
         }
     }
 
@@ -140,6 +147,33 @@ impl ConfigBuilder {
     }
 
     // =========================================================================
+    // Admin override configuration (feature-gated)
+    // =========================================================================
+
+    /// Set the admin override secret (same as ADMIN_JWT_SECRET).
+    #[cfg(feature = "admin-override")]
+    pub fn admin_override_secret(mut self, secret: impl Into<String>) -> Self {
+        let secret = secret.into();
+        if let Some(ref mut config) = self.admin_override {
+            config.secret = secret;
+        } else {
+            self.admin_override = Some(AdminOverrideConfig::new(secret));
+        }
+        self
+    }
+
+    /// Set the admin override token expiry in seconds (default: 60).
+    #[cfg(feature = "admin-override")]
+    pub fn admin_override_expiry_secs(mut self, secs: i64) -> Self {
+        if let Some(ref mut config) = self.admin_override {
+            config.expiry_secs = secs;
+        } else {
+            self.admin_override = Some(AdminOverrideConfig::new(String::new()).with_expiry_secs(secs));
+        }
+        self
+    }
+
+    // =========================================================================
     // Logging configuration
     // =========================================================================
 
@@ -172,6 +206,8 @@ impl ConfigBuilder {
             jwt: self.jwt,
             multi_tenant: self.multi_tenant,
             log_level: self.log_level,
+            #[cfg(feature = "admin-override")]
+            admin_override: self.admin_override,
         })
     }
 }

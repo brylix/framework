@@ -41,6 +41,13 @@ pub use crate::helpers::time::{utc_now, Timestamped};
 // Multi-role Auth
 pub use crate::auth::roles::{get_auth_role, require_admin, AuthRole, MultiRoleJwtConfig};
 
+// Admin Override (feature-gated)
+#[cfg(feature = "admin-override")]
+pub use crate::auth::admin_override::{
+    get_admin_override, issue_admin_override_token, require_auth_with_admin_override,
+    AdminOverride, AdminOverrideAudit, AdminOverrideConfig, ADMIN_OVERRIDE_HEADER,
+};
+
 // Database
 pub use crate::db::{connect, connect_with_pool, init_db, PoolConfig};
 

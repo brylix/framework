@@ -7,6 +7,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **Admin Override** (`auth::admin_override`, feature: `admin-override`) - Temporary admin elevation for POS/kiosk scenarios where an admin "taps in" to authorize a single privileged action without logging out the current user
+  - `AdminOverrideConfig` - Configuration with secret and expiry (default 60 seconds)
+  - `AdminOverrideClaims` - JWT claims with `token_type: "admin_override"` marker to prevent regular admin JWTs from being used as overrides
+  - `AdminOverride` - Validated result containing admin ID, name, and optional action
+  - `issue_admin_override_token()` - Issue short-lived override tokens after admin credential verification
+  - `validate_admin_override_token()` - Validate and decode override tokens
+  - `extract_admin_override_header()` - Extract `X-Admin-Override` header from requests
+  - `get_admin_override()` - Get override info from GraphQL context
+  - `require_auth_with_admin_override()` - Guard requiring both user auth and admin override
+  - `AdminOverrideAudit` - Audit trail struct with `.log()` method for tracing
+  - `admin_override_middleware()` - Middleware for extracting and validating override tokens from requests
+  - `ADMIN_OVERRIDE_HEADER` constant
+  - All types exported via prelude when feature is enabled
+- New environment variables:
+  - `ADMIN_JWT_SECRET` - Secret for admin override tokens (reuses admin role secret)
+  - `ADMIN_OVERRIDE_EXPIRY_SECS` - Token expiry in seconds (optional, default: 60)
+
+### Changed
+- **BREAKING**: `ContextData::new()`, `single_tenant()`, and `multi_tenant()` now accept an additional `admin_override: Option<AdminOverride>` parameter when `admin-override` feature is enabled
+  - Migration: add `None` as the admin_override argument when using the `admin-override` feature
+  - Example: `ContextData::single_tenant(db, user, role, None)` (with feature enabled)
+  - Without the feature enabled, existing code continues to work unchanged
+- `require_admin(ctx)` now also checks for admin override — returns the admin ID from the override when present
+- `ContextData::is_admin()` now returns `true` when an admin override is present
+- CORS headers now include `X-Admin-Override` in `Access-Control-Allow-Headers`
+- Updated `full` feature to include `admin-override`
+- Added `admin_override: Option<AdminOverrideConfig>` to `Config` struct (feature-gated)
+- Added `admin_override_secret()` and `admin_override_expiry_secs()` builder methods to `ConfigBuilder`
+
 ## [0.2.7] - 2026-02-08
 
 ### Added

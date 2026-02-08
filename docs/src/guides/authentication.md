@@ -191,6 +191,116 @@ async fn register(
 }
 ```
 
+## Admin Override (POS/Kiosk Pattern)
+
+> Requires the `admin-override` feature flag.
+
+In POS/supermarket scenarios, a cashier (User role) is logged in but sometimes needs temporary admin authorization for privileged actions like deleting an invoice. Instead of logging out and back in as admin, the admin "taps in" their password to authorize a single action.
+
+### How It Works
+
+```
+1. Cashier is logged in         -> Authorization: Bearer <cashier_token>
+2. Admin enters password         -> App verifies, calls issue_admin_override_token()
+3. Frontend sends both headers   -> Authorization + X-Admin-Override
+4. require_admin(ctx) succeeds   -> Returns admin_id from override
+5. require_auth_user_id(ctx)     -> Still returns cashier_id
+```
+
+### Configuration
+
+```env
+ADMIN_JWT_SECRET=your-admin-secret        # Same secret as admin role JWT
+ADMIN_OVERRIDE_EXPIRY_SECS=60             # Optional, default 60 seconds
+```
+
+### Issuing Override Tokens
+
+After verifying the admin's credentials (e.g. password), issue a short-lived token:
+
+```rust
+use brylix::prelude::*;
+
+async fn admin_tap_in(
+    ctx: &Context<'_>,
+    admin_email: String,
+    admin_password: String,
+    action: Option<String>,
+) -> Result<String> {
+    let data = ctx.data_unchecked::<ContextData>();
+
+    // Verify admin credentials
+    let admin = AdminRepository::find_by_email(&data.db, &admin_email)
+        .await?
+        .ok_or(gql_from_domain(DomainError::InvalidCredentials))?;
+
+    if !verify_password(&admin_password, &admin.password_hash)? {
+        return Err(gql_from_domain(DomainError::InvalidCredentials));
+    }
+
+    // Issue short-lived override token
+    let config = AdminOverrideConfig::new(std::env::var("ADMIN_JWT_SECRET").unwrap());
+    let token = issue_admin_override_token(
+        &config,
+        admin.id,
+        &admin.name,
+        action.as_deref(),
+    ).map_err(|e| gql_error("INTERNAL_ERROR", &e))?;
+
+    Ok(token)
+}
+```
+
+### Using Guards with Override
+
+The `require_admin()` guard works for **both** scenarios automatically:
+
+```rust
+// Scenario 1: Admin logged in directly     -> returns admin_id from role
+// Scenario 2: Cashier + admin override     -> returns admin_id from override
+let admin_id = require_admin(ctx)?;
+```
+
+For audit trails, check who performed the action vs who authorized it:
+
+```rust
+async fn delete_invoice(ctx: &Context<'_>, id: i64) -> Result<bool> {
+    let admin_id = require_admin(ctx)?;
+    let user_id = require_auth_user_id(ctx)?;
+
+    // Build audit trail
+    if let Some(ao) = get_admin_override(ctx) {
+        let audit = AdminOverrideAudit {
+            actor_user_id: user_id,
+            authorizer_admin_id: ao.admin_id,
+            authorizer_name: ao.admin_name.clone(),
+            action: ao.action.clone(),
+        };
+        audit.log();
+    }
+
+    InvoiceService::delete(&data.db, id).await.map_err(gql_from_domain)?;
+    Ok(true)
+}
+```
+
+### Requiring Both User + Override
+
+To explicitly require both an authenticated user AND an admin override:
+
+```rust
+let (cashier_id, admin_override) = require_auth_with_admin_override(ctx)?;
+// cashier_id: the logged-in user
+// admin_override.admin_id: the admin who authorized
+```
+
+### Security Notes
+
+- Override tokens are **short-lived** (default 60 seconds)
+- Tokens include a `token_type: "admin_override"` marker, so regular admin JWTs cannot be used as overrides
+- The `X-Admin-Override` header is included in CORS allowed headers
+- Override tokens use the same secret as the admin role JWT (`ADMIN_JWT_SECRET`)
+
 ## Best Practices
 
 1. **Use strong JWT secrets** - Minimum 256 bits of entropy

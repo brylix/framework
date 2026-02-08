@@ -58,6 +58,7 @@ async fn main() -> Result<(), brylix::Error> {
 | `multi-tenant` | Multi-tenant support | No |
 | `email` | SMTP email with attachments | No |
 | `s3` | S3 presigned URLs for file uploads | No |
+| `admin-override` | Temporary admin elevation for POS/kiosk | No |
 | `full` | All features enabled | No |
 
 ```toml
@@ -72,6 +73,9 @@ brylix = { version = "0.2", features = ["email"] }
 
 # S3 presigned URLs
 brylix = { version = "0.2", features = ["s3"] }
+
+# Admin override (POS/kiosk temporary admin elevation)
+brylix = { version = "0.2", features = ["admin-override"] }
 ```
 
 ## Utilities
@@ -173,6 +177,45 @@ let admin_id = require_admin(ctx)?;       // Errors if not admin
 let role = get_auth_role(ctx);            // Option<&AuthRole>
 ```
 
+### Admin Override (POS/Kiosk Pattern)
+
+Allows a logged-in user (e.g. cashier) to perform admin-only actions when an admin "taps in"
+with a short-lived override token. Requires the `admin-override` feature.
+
+```rust
+use brylix::prelude::*;
+
+// 1. After verifying admin credentials, issue a short-lived token
+let config = AdminOverrideConfig::new(std::env::var("ADMIN_JWT_SECRET").unwrap())
+    .with_expiry_secs(60); // 60 seconds default
+let token = issue_admin_override_token(&config, admin_id, "Admin Name", Some("delete_invoice"))?;
+
+// 2. Frontend sends both headers for the privileged action:
+//    Authorization: Bearer <cashier_token>
+//    X-Admin-Override: <admin_override_token>
+
+// 3. In resolvers, require_admin() works for BOTH scenarios:
+async fn delete_invoice(ctx: &Context<'_>, id: i64) -> Result<bool> {
+    let admin_id = require_admin(ctx)?; // Works for direct admin OR override
+    let user_id = require_auth_user_id(ctx)?; // Still the cashier
+
+    // For audit trail:
+    if let Some(ao) = get_admin_override(ctx) {
+        let audit = AdminOverrideAudit {
+            actor_user_id: user_id,
+            authorizer_admin_id: ao.admin_id,
+            authorizer_name: ao.admin_name.clone(),
+            action: ao.action.clone(),
+        };
+        audit.log(); // Logs via tracing
+    }
+    Ok(true)
+}
+
+// 4. Or require BOTH user auth + admin override explicitly:
+let (cashier_id, admin_override) = require_auth_with_admin_override(ctx)?;
+```
+
 ## Environment Variables
 
 ```env
@@ -198,6 +241,10 @@ S3_DOWNLOAD_EXPIRES_SECS=3600
 # If not set, falls back to default AWS credential chain (IAM role for Lambda)
 S3_ACCESS_KEY_ID=your-access-key
 S3_SECRET_ACCESS_KEY=your-secret-key
+
+# Admin Override (optional, requires `admin-override` feature)
+ADMIN_JWT_SECRET=your-admin-secret        # Same secret used for admin role JWT
+ADMIN_OVERRIDE_EXPIRY_SECS=60             # Optional, default 60 seconds
 ```
 
 ## Documentation

@@ -12,6 +12,7 @@ A Rust framework for building GraphQL APIs on AWS Lambda with SeaORM and multi-t
 - **Validation** - Built-in input validation utilities
 - **Email Provider** - SMTP email support with attachments
 - **S3 Provider** - Presigned URL generation for file uploads/downloads
+- **Admin Override** - Temporary admin elevation for POS/kiosk scenarios
 - **CLI Tool** - Project scaffolding and code generation
 
 ## Quick Start
@@ -154,6 +155,13 @@ S3_DOWNLOAD_EXPIRES_SECS=3600
 
 AWS credentials are loaded via the standard credential chain (environment variables, IAM role, or AWS profile).
 
+### Admin Override (Optional)
+
+```env
+ADMIN_JWT_SECRET=your-admin-secret        # Same secret used for admin role JWT
+ADMIN_OVERRIDE_EXPIRY_SECS=60             # Optional, default 60 seconds
+```
+
 ## CLI Commands
 
 ### Getting Help
@@ -257,7 +265,10 @@ brylix = { version = "0.2", features = ["email"] }
 # S3 presigned URLs
 brylix = { version = "0.2", features = ["s3"] }
 
-# Full features (includes all: mysql, postgres, playground, multi-tenant, email, s3)
+# Admin override (POS/kiosk temporary admin elevation)
+brylix = { version = "0.2", features = ["admin-override"] }
+
+# Full features (includes all: mysql, postgres, playground, multi-tenant, email, s3, admin-override)
 brylix = { version = "0.2", features = ["full"] }
 ```
 

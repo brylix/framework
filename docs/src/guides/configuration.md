@@ -137,6 +137,31 @@ AWS credentials are loaded via the standard credential chain:
 - IAM role (recommended for Lambda)
 - AWS profile
 
+## Admin Override Configuration
+
+For temporary admin elevation in POS/kiosk scenarios (requires `admin-override` feature):
+
+```env
+# Secret for admin override tokens (same as admin role JWT secret)
+ADMIN_JWT_SECRET=your-admin-secret
+
+# How long an override token stays valid (default: 60 seconds)
+ADMIN_OVERRIDE_EXPIRY_SECS=60
+```
+
+### Builder Pattern
+
+```rust
+use brylix::config::ConfigBuilder;
+
+let config = ConfigBuilder::new()
+    .database_host("localhost")
+    .jwt_secret("secret")
+    .admin_override_secret("admin-secret")    // requires admin-override feature
+    .admin_override_expiry_secs(120)          // optional, default 60
+    .build()?;
+```
+
 ## Environment-Specific Config
 
 ### Development (.env)

@@ -19,6 +19,7 @@ brylix = { version = "0.2", features = ["mysql", "playground"] }
 | `multi-tenant` | Multi-tenant mode |
 | `email` | SMTP email provider |
 | `s3` | S3 presigned URL provider |
+| `admin-override` | Temporary admin elevation |
 | `full` | All features enabled |
 
 ## Modules
@@ -197,6 +198,43 @@ let response = s3.generate_upload_url(request, Some("tenant1")).await?;
 // response.key = "tenant1/products/image.jpg"
 ```
 
+### `brylix::auth::admin_override`
+
+Admin override for temporary elevated access (requires `admin-override` feature):
+
+```rust
+use brylix::prelude::*;
+
+// Configuration
+let config = AdminOverrideConfig::new("admin-secret".to_string())
+    .with_expiry_secs(60);
+
+// Issue a short-lived override token
+let token = issue_admin_override_token(&config, admin_id, "Admin Name", Some("delete_invoice"))?;
+
+// Validate an override token
+let admin_override = validate_admin_override_token(&token, &config)?;
+// admin_override.admin_id, admin_override.admin_name, admin_override.action
+
+// In resolvers - get override from context
+let override_info = get_admin_override(ctx); // Option<&AdminOverride>
+
+// Require both user auth + admin override
+let (user_id, admin_override) = require_auth_with_admin_override(ctx)?;
+
+// Audit trail
+let audit = AdminOverrideAudit {
+    actor_user_id: 5,
+    authorizer_admin_id: admin_override.admin_id,
+    authorizer_name: admin_override.admin_name.clone(),
+    action: admin_override.action.clone(),
+};
+audit.log();
+
+// Header constant
+assert_eq!(ADMIN_OVERRIDE_HEADER, "X-Admin-Override");
+```
+
 ## Types
 
 ### BrylixConfig
@@ -230,6 +268,37 @@ pub struct Claims {
     pub tenant: Option<String>,
     pub exp: i64,           // Expiration
     pub iat: i64,           // Issued at
+}
+```
+
+### AdminOverrideConfig (admin-override feature)
+
+```rust
+pub struct AdminOverrideConfig {
+    pub secret: String,         // JWT secret for override tokens
+    pub expiry_secs: i64,       // Token lifetime (default: 60)
+}
+```
+
+### AdminOverride (admin-override feature)
+
+```rust
+pub struct AdminOverride {
+    pub admin_id: i64,          // Admin user ID
+    pub admin_sub: String,      // Admin subject string
+    pub admin_name: String,     // Admin display name
+    pub action: Option<String>, // Action being authorized
+}
+```
+
+### AdminOverrideAudit (admin-override feature)
+
+```rust
+pub struct AdminOverrideAudit {
+    pub actor_user_id: i64,         // Who performed the action
+    pub authorizer_admin_id: i64,   // Who authorized it
+    pub authorizer_name: String,    // Authorizer's name
+    pub action: Option<String>,     // What was authorized
 }
 ```
 

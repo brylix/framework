@@ -18,7 +18,8 @@ playground = ["async-graphql/playground"]
 multi-tenant = []
 email = ["lettre"]
 s3 = ["aws-config", "aws-sdk-s3", "aws-credential-types"]
-full = ["mysql", "postgres", "playground", "multi-tenant", "email", "s3"]
+admin-override = []
+full = ["mysql", "postgres", "playground", "multi-tenant", "email", "s3", "admin-override"]
 
 [dependencies]
 # Async runtime

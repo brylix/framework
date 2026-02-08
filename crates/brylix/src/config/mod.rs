@@ -26,6 +26,9 @@ mod builder;
 
 pub use builder::ConfigBuilder;
 
+#[cfg(feature = "admin-override")]
+pub use crate::auth::admin_override::AdminOverrideConfig;
+
 use std::env;
 use std::sync::OnceLock;
 
@@ -124,6 +127,9 @@ pub struct Config {
     pub jwt: JwtConfig,
     pub multi_tenant: MultiTenantConfig,
     pub log_level: String,
+    /// Admin override configuration (feature-gated).
+    #[cfg(feature = "admin-override")]
+    pub admin_override: Option<AdminOverrideConfig>,
 }
 
 impl Config {
@@ -165,11 +171,23 @@ impl Config {
         // Logging
         let log_level = env::var("RUST_LOG").unwrap_or_else(|_| "info".to_string());
 
+        // Admin override config (optional, requires ADMIN_JWT_SECRET)
+        #[cfg(feature = "admin-override")]
+        let admin_override = env::var("ADMIN_JWT_SECRET").ok().map(|secret| {
+            let expiry_secs = env::var("ADMIN_OVERRIDE_EXPIRY_SECS")
+                .ok()
+                .and_then(|v| v.parse().ok())
+                .unwrap_or(60);
+            AdminOverrideConfig::new(secret).with_expiry_secs(expiry_secs)
+        });
+
         Ok(Config {
             database,
             jwt,
             multi_tenant,
             log_level,
+            #[cfg(feature = "admin-override")]
+            admin_override,
         })
     }
 

@@ -10,7 +10,7 @@ pub fn cors_headers() -> [(&'static str, &'static str); 3] {
         ("Access-Control-Allow-Methods", "GET,POST,OPTIONS"),
         (
             "Access-Control-Allow-Headers",
-            "Content-Type, Authorization",
+            "Content-Type, Authorization, X-Admin-Override",
         ),
     ]
 }
@@ -23,7 +23,7 @@ pub fn cors_preflight() -> Result<Response<Body>, Error> {
         .header("Access-Control-Allow-Methods", "GET,POST,OPTIONS")
         .header(
             "Access-Control-Allow-Headers",
-            "Content-Type, Authorization",
+            "Content-Type, Authorization, X-Admin-Override",
         )
         .header("Access-Control-Max-Age", "86400")
         .body(Body::Empty)

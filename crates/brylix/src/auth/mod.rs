@@ -24,6 +24,10 @@ mod password;
 /// Multi-role authentication support.
 pub mod roles;
 
+/// Admin override for temporary elevated access.
+#[cfg(feature = "admin-override")]
+pub mod admin_override;
+
 pub use claims::{Claims, JwtResult};
 pub use middleware::jwt_middleware;
 pub use password::{hash_password, verify_password, generate_temp_password};

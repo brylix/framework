@@ -165,8 +165,22 @@ impl Default for MultiRoleJwtConfig {
 /// ```
 pub fn require_admin(ctx: &Context<'_>) -> Result<i64, GqlError> {
     let data = ctx.data_unchecked::<ContextData>();
+
+    // Check direct admin role first
+    if let Some(role) = &data.role {
+        if role.is_admin() {
+            return Ok(role.id());
+        }
+    }
+
+    // Check admin override (feature-gated)
+    #[cfg(feature = "admin-override")]
+    if let Some(ao) = &data.admin_override {
+        return Ok(ao.admin_id);
+    }
+
+    // Neither admin role nor override
     match &data.role {
-        Some(role) if role.is_admin() => Ok(role.id()),
         Some(_) => Err(gql_error("FORBIDDEN", "Admin access required")),
         None => Err(gql_unauthorized()),
     }

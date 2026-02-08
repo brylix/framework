@@ -5,6 +5,9 @@ use std::sync::Arc;
 
 use crate::auth::roles::AuthRole;
 
+#[cfg(feature = "admin-override")]
+use crate::auth::admin_override::AdminOverride;
+
 /// Information about the current tenant (multi-tenant mode).
 #[derive(Clone, Debug)]
 pub struct TenantInfo {
@@ -72,6 +75,11 @@ pub struct ContextData {
     /// Tenant information (multi-tenant mode only)
     /// Wrapped in Arc for shared ownership across resolvers
     pub tenant: Option<Arc<TenantInfo>>,
+
+    /// Admin override for temporary elevated access.
+    /// Present when a user sends an `X-Admin-Override` header with a valid token.
+    #[cfg(feature = "admin-override")]
+    pub admin_override: Option<AdminOverride>,
 }
 
 impl ContextData {
@@ -81,12 +89,15 @@ impl ContextData {
         user: Option<String>,
         role: Option<AuthRole>,
         tenant: Option<TenantInfo>,
+        #[cfg(feature = "admin-override")] admin_override: Option<AdminOverride>,
     ) -> Self {
         Self {
             db,
             user,
             role,
             tenant: tenant.map(Arc::new),
+            #[cfg(feature = "admin-override")]
+            admin_override,
         }
     }
 
@@ -95,12 +106,15 @@ impl ContextData {
         db: DatabaseConnection,
         user: Option<String>,
         role: Option<AuthRole>,
+        #[cfg(feature = "admin-override")] admin_override: Option<AdminOverride>,
     ) -> Self {
         Self {
             db,
             user,
             role,
             tenant: None,
+            #[cfg(feature = "admin-override")]
+            admin_override,
         }
     }
 
@@ -110,12 +124,15 @@ impl ContextData {
         user: Option<String>,
         role: Option<AuthRole>,
         tenant: TenantInfo,
+        #[cfg(feature = "admin-override")] admin_override: Option<AdminOverride>,
     ) -> Self {
         Self {
             db,
             user,
             role,
             tenant: Some(Arc::new(tenant)),
+            #[cfg(feature = "admin-override")]
+            admin_override,
         }
     }
 
@@ -134,9 +151,24 @@ impl ContextData {
         self.role.as_ref()
     }
 
-    /// Check if the authenticated user is an admin
+    /// Check if the authenticated user is an admin.
+    ///
+    /// Returns `true` if the user has an admin role OR if an admin override is present.
     pub fn is_admin(&self) -> bool {
-        self.role.as_ref().is_some_and(|r| r.is_admin())
+        if self.role.as_ref().is_some_and(|r| r.is_admin()) {
+            return true;
+        }
+        #[cfg(feature = "admin-override")]
+        if self.admin_override.is_some() {
+            return true;
+        }
+        false
+    }
+
+    /// Get the admin override info, if present.
+    #[cfg(feature = "admin-override")]
+    pub fn admin_override(&self) -> Option<&AdminOverride> {
+        self.admin_override.as_ref()
     }
 
     /// Get the tenant name if in multi-tenant mode
