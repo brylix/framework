@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.8] - 2026-02-08
+
 ### Added
 - **Admin Override** (`auth::admin_override`, feature: `admin-override`) - Temporary admin elevation for POS/kiosk scenarios where an admin "taps in" to authorize a single privileged action without logging out the current user
   - `AdminOverrideConfig` - Configuration with secret and expiry (default 60 seconds)
@@ -189,7 +191,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - GraphQL Playground via `playground` feature flag
 - Multi-tenant mode via `multi-tenant` feature flag
 
-[Unreleased]: https://github.com/brylix/framework/compare/v0.2.7...HEAD
+[Unreleased]: https://github.com/brylix/framework/compare/v0.2.8...HEAD
+[0.2.8]: https://github.com/brylix/framework/compare/v0.2.7...v0.2.8
 [0.2.7]: https://github.com/brylix/framework/compare/v0.2.6...v0.2.7
 [0.2.6]: https://github.com/brylix/framework/compare/v0.2.5...v0.2.6
 [0.2.5]: https://github.com/brylix/framework/compare/v0.2.4...v0.2.5
