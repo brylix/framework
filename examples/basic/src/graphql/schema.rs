@@ -87,6 +87,6 @@ impl MutationRoot {
 /// Build the GraphQL schema
 pub fn build_schema(db: DatabaseConnection) -> Schema<QueryRoot, MutationRoot, EmptySubscription> {
     Schema::build(QueryRoot, MutationRoot, EmptySubscription)
-        .data(ContextData::single_tenant(db, None))
+        .data(ContextData::single_tenant(db, None, None))
         .finish()
 }

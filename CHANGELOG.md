@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.7] - 2026-02-08
+
+### Added
+- **Pagination Utilities** (`graphql::pagination`) - Generic `PageInfo`, `Connection<T>`, `IntoConnection` trait, and `page_info()` function for building paginated GraphQL responses
+- **GraphQL ID Parsing** (`graphql::helpers`) - `parse_gql_id()`, `parse_gql_id_field()`, and `gql_id!` macro for parsing string IDs to i64
+- **JSON Column Helpers** (`helpers::json`) - `JsonValueExt` trait with `parse_as()` and `parse_or_default()` for ergonomic `serde_json::Value` parsing
+- **Timestamp Helpers** (`helpers::time`) - `utc_now()` function and `Timestamped` trait for managing `created_at`/`updated_at` fields
+- **Soft Delete Pattern** (`helpers::soft_delete`) - `SoftDeletable` trait and `status` module with common lifecycle constants (active, pending, approved, rejected, deleted)
+- **Multi-Role Authentication** (`auth::roles`) - `AuthRole` enum (User, Admin, Custom), `MultiRoleJwtConfig` for multiple JWT secrets, `require_admin()` and `get_auth_role()` guards
+- New `helpers` module with `json`, `time`, and `soft_delete` submodules
+- All new types and functions exported via prelude
+
+### Changed
+- **BREAKING**: `ContextData::new()`, `single_tenant()`, and `multi_tenant()` now require a `role: Option<AuthRole>` parameter
+  - Migration: add `None` as the role argument for projects not using multi-role auth
+  - Example: `ContextData::single_tenant(db, user, None)`
+- Added `role: Option<AuthRole>` field to `ContextData` struct
+- Added `auth_role()` and `is_admin()` helper methods to `ContextData`
+
 ## [0.2.6] - 2026-02-04
 
 ### Added
@@ -140,7 +159,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - GraphQL Playground via `playground` feature flag
 - Multi-tenant mode via `multi-tenant` feature flag
 
-[Unreleased]: https://github.com/brylix/framework/compare/v0.2.6...HEAD
+[Unreleased]: https://github.com/brylix/framework/compare/v0.2.7...HEAD
+[0.2.7]: https://github.com/brylix/framework/compare/v0.2.6...v0.2.7
 [0.2.6]: https://github.com/brylix/framework/compare/v0.2.5...v0.2.6
 [0.2.5]: https://github.com/brylix/framework/compare/v0.2.4...v0.2.5
 [0.2.4]: https://github.com/brylix/framework/compare/v0.2.3...v0.2.4

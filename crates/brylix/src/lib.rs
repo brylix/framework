@@ -56,6 +56,7 @@ pub mod db;
 pub mod errors;
 pub mod graphql;
 pub mod handler;
+pub mod helpers;
 pub mod provider;
 pub mod validation;
 

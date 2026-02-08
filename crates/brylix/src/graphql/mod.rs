@@ -24,6 +24,12 @@
 mod context;
 mod guards;
 
+/// GraphQL helper functions (ID parsing, etc.)
+pub mod helpers;
+
+/// Pagination utilities for GraphQL connections.
+pub mod pagination;
+
 pub use context::ContextData;
 pub use guards::{require_auth, require_auth_user_id};
 

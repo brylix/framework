@@ -3,6 +3,8 @@
 use sea_orm::DatabaseConnection;
 use std::sync::Arc;
 
+use crate::auth::roles::AuthRole;
+
 /// Information about the current tenant (multi-tenant mode).
 #[derive(Clone, Debug)]
 pub struct TenantInfo {
@@ -63,6 +65,10 @@ pub struct ContextData {
     /// None if the request is not authenticated
     pub user: Option<String>,
 
+    /// Authentication role (user, admin, or custom)
+    /// None if no role-based auth is configured
+    pub role: Option<AuthRole>,
+
     /// Tenant information (multi-tenant mode only)
     /// Wrapped in Arc for shared ownership across resolvers
     pub tenant: Option<Arc<TenantInfo>>,
@@ -70,19 +76,30 @@ pub struct ContextData {
 
 impl ContextData {
     /// Create a new ContextData
-    pub fn new(db: DatabaseConnection, user: Option<String>, tenant: Option<TenantInfo>) -> Self {
+    pub fn new(
+        db: DatabaseConnection,
+        user: Option<String>,
+        role: Option<AuthRole>,
+        tenant: Option<TenantInfo>,
+    ) -> Self {
         Self {
             db,
             user,
+            role,
             tenant: tenant.map(Arc::new),
         }
     }
 
     /// Create a new ContextData for single-tenant mode
-    pub fn single_tenant(db: DatabaseConnection, user: Option<String>) -> Self {
+    pub fn single_tenant(
+        db: DatabaseConnection,
+        user: Option<String>,
+        role: Option<AuthRole>,
+    ) -> Self {
         Self {
             db,
             user,
+            role,
             tenant: None,
         }
     }
@@ -91,11 +108,13 @@ impl ContextData {
     pub fn multi_tenant(
         db: DatabaseConnection,
         user: Option<String>,
+        role: Option<AuthRole>,
         tenant: TenantInfo,
     ) -> Self {
         Self {
             db,
             user,
+            role,
             tenant: Some(Arc::new(tenant)),
         }
     }
@@ -108,6 +127,16 @@ impl ContextData {
     /// Get the user ID if authenticated
     pub fn user_id(&self) -> Option<&str> {
         self.user.as_deref()
+    }
+
+    /// Get the authentication role if set
+    pub fn auth_role(&self) -> Option<&AuthRole> {
+        self.role.as_ref()
+    }
+
+    /// Check if the authenticated user is an admin
+    pub fn is_admin(&self) -> bool {
+        self.role.as_ref().is_some_and(|r| r.is_admin())
     }
 
     /// Get the tenant name if in multi-tenant mode

@@ -922,7 +922,7 @@ dependencies = [
 
 [[package]]
 name = "brylix"
-version = "0.2.6"
+version = "0.2.7"
 dependencies = [
  "anyhow",
  "argon2",
@@ -957,7 +957,7 @@ dependencies = [
 
 [[package]]
 name = "brylix-cli"
-version = "0.2.6"
+version = "0.2.7"
 dependencies = [
  "anyhow",
  "clap",

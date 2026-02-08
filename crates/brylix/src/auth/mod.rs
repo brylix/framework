@@ -21,6 +21,9 @@ mod claims;
 mod middleware;
 mod password;
 
+/// Multi-role authentication support.
+pub mod roles;
+
 pub use claims::{Claims, JwtResult};
 pub use middleware::jwt_middleware;
 pub use password::{hash_password, verify_password, generate_temp_password};

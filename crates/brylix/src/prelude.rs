@@ -27,6 +27,20 @@ pub use crate::validation::{
 // GraphQL
 pub use crate::graphql::{require_auth, require_auth_user_id, ContextData};
 
+// Pagination
+pub use crate::graphql::pagination::{page_info, Connection, IntoConnection, PageInfo};
+
+// ID Parsing
+pub use crate::graphql::helpers::{parse_gql_id, parse_gql_id_field};
+
+// Helpers
+pub use crate::helpers::json::JsonValueExt;
+pub use crate::helpers::soft_delete::{status, SoftDeletable};
+pub use crate::helpers::time::{utc_now, Timestamped};
+
+// Multi-role Auth
+pub use crate::auth::roles::{get_auth_role, require_admin, AuthRole, MultiRoleJwtConfig};
+
 // Database
 pub use crate::db::{connect, connect_with_pool, init_db, PoolConfig};
 
