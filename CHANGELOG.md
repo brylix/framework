@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.9] - 2026-03-23
+
+### Changed
+- Upgraded `tokio` from 1 to 1.50
+- Upgraded `futures` from 0.3 to 0.3.32
+- Upgraded `lambda_http` from 1.0 to 1.1.2
+- Upgraded `lambda_runtime` from 1.0 to 1.1.2
+- Upgraded `anyhow` from 1 to 1.0.102
+- Upgraded `tracing-subscriber` from 0.3 to 0.3.23
+- Upgraded `chrono` from 0.4 to 0.4.44
+- Upgraded `regex` from 1 to 1.12.3
+- Upgraded `rand` from 0.9 to 0.10 (updated `use rand::Rng` → `use rand::RngExt`)
+- Upgraded `clap` from 4.5 to 4.6
+- Upgraded `console` from 0.16 to 0.16.3
+- Upgraded `aws-config` from 1.5 to 1.8.15
+- Upgraded `aws-sdk-s3` from 1.65 to 1.127
+- Upgraded `aws-credential-types` from 1.2 to 1.2.14
+- Upgraded `openssl` from 0.10 to 0.10.76
+
+### Fixed
+- Updated `rand` API usage: `use rand::Rng` → `use rand::RngExt` for rand 0.10 compatibility
+
 ## [0.2.8] - 2026-02-08
 
 ### Added
@@ -191,7 +213,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - GraphQL Playground via `playground` feature flag
 - Multi-tenant mode via `multi-tenant` feature flag
 
-[Unreleased]: https://github.com/brylix/framework/compare/v0.2.8...HEAD
+[Unreleased]: https://github.com/brylix/framework/compare/v0.2.9...HEAD
+[0.2.9]: https://github.com/brylix/framework/compare/v0.2.8...v0.2.9
 [0.2.8]: https://github.com/brylix/framework/compare/v0.2.7...v0.2.8
 [0.2.7]: https://github.com/brylix/framework/compare/v0.2.6...v0.2.7
 [0.2.6]: https://github.com/brylix/framework/compare/v0.2.5...v0.2.6

@@ -57,7 +57,7 @@ pub fn verify_password(password: &str, hash: &str) -> Result<bool, String> {
 ///
 /// A random 16-character alphanumeric password
 pub fn generate_temp_password() -> String {
-    use rand::Rng;
+    use rand::RngExt;
     const CHARSET: &[u8] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%";
     let mut rng = rand::rng();
 

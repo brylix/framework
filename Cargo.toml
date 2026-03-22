@@ -8,7 +8,7 @@ members = [
 ]
 
 [workspace.package]
-version = "0.2.8"
+version = "0.2.9"
 edition = "2021"
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/brylix/framework"
@@ -16,9 +16,9 @@ authors = ["Brylix Team"]
 
 [workspace.dependencies]
 # Async runtime
-tokio = { version = "1", features = ["rt-multi-thread", "macros", "sync"] }
+tokio = { version = "1.50", features = ["rt-multi-thread", "macros", "sync"] }
 async-trait = "0.1"
-futures = "0.3"
+futures = "0.3.32"
 
 # GraphQL
 async-graphql = { version = "7", default-features = false, features = ["tracing", "chrono"] }
@@ -28,8 +28,8 @@ sea-orm = { version = "1.1", features = ["runtime-tokio-rustls", "macros"] }
 sea-orm-migration = { version = "1.1", features = ["runtime-tokio-rustls"] }
 
 # Lambda
-lambda_http = "1.0"
-lambda_runtime = "1.0"
+lambda_http = "1.1.2"
+lambda_runtime = "1.1.2"
 
 # Auth
 jsonwebtoken = { version = "10", features = ["rust_crypto"] }
@@ -41,38 +41,38 @@ serde_json = "1"
 
 # Error handling
 thiserror = "2"
-anyhow = "1"
+anyhow = "1.0.102"
 
 # Logging
 tracing = "0.1"
-tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+tracing-subscriber = { version = "0.3.23", features = ["env-filter"] }
 
 # Utils
-chrono = { version = "0.4", features = ["serde"] }
-regex = "1"
+chrono = { version = "0.4.44", features = ["serde"] }
+regex = "1.12.3"
 lazy_static = "1"
 dotenvy = "0.15"
 http = "1"
-rand = "0.9"
+rand = "0.10"
 multer = "3"
 tokio-util = { version = "0.7", features = ["codec"] }
 
 # CLI
-clap = { version = "4.5", features = ["derive"] }
+clap = { version = "4.6", features = ["derive"] }
 handlebars = "6.4"
-console = "0.16"
+console = "0.16.3"
 dialoguer = "0.12"
 
 # Email
 lettre = { version = "0.11", default-features = false, features = ["tokio1-rustls-tls", "builder", "smtp-transport", "hostname"] }
 
 # AWS S3
-aws-config = { version = "1.5", features = ["behavior-version-latest"] }
-aws-sdk-s3 = "1.65"
-aws-credential-types = "1.2"
+aws-config = { version = "1.8.15", features = ["behavior-version-latest"] }
+aws-sdk-s3 = "1.127"
+aws-credential-types = "1.2.14"
 
 # Cross-compilation support
-openssl = { version = "0.10", features = ["vendored"] }
+openssl = { version = "0.10.76", features = ["vendored"] }
 
 # Framework
 brylix = { path = "crates/brylix" }
